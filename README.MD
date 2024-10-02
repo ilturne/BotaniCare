@@ -1,6 +1,3 @@
-This is a placeholder for our project. I will add a description of the project as we go. (Example change)
-
-
 # Greenhouse IoT Project - Tech Stack Overview
 
 ## Tech Stack Overview
