@@ -1,0 +1,71 @@
+#:kivy 2.3.0
+
+<RoundedButton@Button>:
+    background_normal: ''
+    background_color: 0, 0, 0, 0  # Transparent background
+    color: 1, 1, 1, 1  # White text
+    font_size: '18sp'
+    canvas.before:
+        Color:
+            rgba: self.bg_color if hasattr(self, 'bg_color') else (0, 0.6, 0, 1)
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(15), ]
+
+<GreenhouseApp>:
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: dp(10)
+        padding: dp(20)
+
+        Label:
+            text: 'Automatic Greenhouse System'
+            font_size: '24sp'
+            size_hint_y: None
+            height: self.texture_size[1]
+            color: 0, 0.5, 0, 1  # Dark Green Color
+
+        GridLayout:
+            cols: 2
+            spacing: dp(10)
+            size_hint_y: None
+            height: dp(200)
+
+            RoundedButton:
+                text: 'Add Plant'
+                bg_color: 0, 0.6, 0, 1
+                on_press: root.add_plant()
+
+            RoundedButton:
+                text: 'Remove Plant'
+                bg_color: 0, 0.6, 0, 1
+                on_press: root.remove_plant()
+
+            RoundedButton:
+                text: 'Check Status'
+                bg_color: 0, 0.6, 0, 1
+                on_press: root.check_status()
+
+            RoundedButton:
+                text: 'Settings'
+                bg_color: 0, 0.6, 0, 1
+                on_press: root.open_settings()
+
+        Label:
+            id: status_label
+            text: 'Welcome to the Greenhouse System!'
+            font_size: '18sp'
+            size_hint_y: None
+            height: self.texture_size[1]
+            color: 0, 0.5, 0, 1  # Dark Green Color
+
+        ScrollView:
+            size_hint: (1, None)
+            height: dp(200)
+
+            GridLayout:
+                id: plant_list
+                cols: 1
+                size_hint_y: None
+                height: self.minimum_height
