@@ -22,11 +22,10 @@ Kivy is used to create a cross-platform GUI that allows the user to manage the g
   - Buttons for adding/removing plants, checking status, and managing settings
   - Custom theming (green and white) to match the greenhouse environment
 
-### 3. LattePanda Sigma / Raspberry Pi 5 (Development Board)
+### 3. Raspberry Pi 5 Development Board
 
-The project is built on either the **LattePanda Sigma** or **Raspberry Pi 5** development board, which provides the processing power and GPIO access required for managing sensors and actuators. The boards also run Linux, making it easy to interface with Python and Kivy for running the software continuously.
+The project is built on **Raspberry Pi 5** development board, which provides the processing power and GPIO access required for managing sensors and actuators. The boards also run Linux, making it easy to interface with Python and Kivy for running the software continuously.
 
-- **LattePanda Sigma**: Ideal for Windows-based remote development and testing.
 - **Raspberry Pi 5**: A powerful, Linux-based board for embedded systems development.
 
 ### 4. Systemd (For Continuous Running and Startup)

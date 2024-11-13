@@ -7,65 +7,87 @@
     font_size: '18sp'
     canvas.before:
         Color:
-            rgba: self.bg_color if hasattr(self, 'bg_color') else (0, 0.6, 0, 1)
+            rgba: (self.bg_color if hasattr(self, 'bg_color') and self.bg_color is not None else (0.3, 0.6, 0.3, 0.8))
         RoundedRectangle:
             pos: self.pos
             size: self.size
             radius: [dp(15), ]
 
 <GreenhouseApp>:
-    BoxLayout:
-        orientation: 'vertical'
-        spacing: dp(10)
-        padding: dp(20)
+    FloatLayout:
+        Image:
+            source: 'MAIN_BACKGROUND.png'  # Background image
+            allow_stretch: True
+            keep_ratio: False
+            size_hint: (1, 1)
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
 
-        Label:
-            text: 'Automatic Greenhouse System'
-            font_size: '24sp'
-            size_hint_y: None
-            height: self.texture_size[1]
-            color: 0, 0.5, 0, 1  # Dark Green Color
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: 0.8, 0.8
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            spacing: dp(20)
 
-        GridLayout:
-            cols: 2
-            spacing: dp(10)
-            size_hint_y: None
-            height: dp(200)
-
-            RoundedButton:
-                text: 'Add Plant'
-                bg_color: 0, 0.6, 0, 1
-                on_press: root.add_plant()
-
-            RoundedButton:
-                text: 'Remove Plant'
-                bg_color: 0, 0.6, 0, 1
-                on_press: root.remove_plant()
-
-            RoundedButton:
-                text: 'Check Status'
-                bg_color: 0, 0.6, 0, 1
-                on_press: root.check_status()
-
-            RoundedButton:
-                text: 'Settings'
-                bg_color: 0, 0.6, 0, 1
-                on_press: root.open_settings()
-
-        Label:
-            id: status_label
-            text: 'Welcome to the Greenhouse System!'
-            font_size: '18sp'
-            size_hint_y: None
-            height: self.texture_size[1]
-            color: 0, 0.5, 0, 1  # Dark Green Color
-
-        ScrollView:
-            size_hint: (1, None)
-            height: dp(200)
+            Label:
+                text: 'System Status'
+                font_size: '28sp'
+                bold: True
+                color: 0, 0.5, 0, 1  # Darker green for text
+                size_hint_y: None
+                height: dp(40)
+                halign: 'center'
+                valign: 'middle'
+                text_size: self.width, None
 
             GridLayout:
-                id: plant_list
-                cols: 1
+                cols: 2
+                spacing: dp(15)
+                padding: dp(10)
+                size_hint: (1, 0.6)
+
+                RoundedButton:
+                    text: 'Add Plant'
+                    bg_color: 0.3, 0.8, 0.3, 0.6  # Softer, translucent green background
+                    on_press: root.add_plant()
+                    size_hint: 0.9, None
+                    height: dp(100)
+
+                RoundedButton:
+                    text: 'Remove Plant'
+                    bg_color: 0.3, 0.8, 0.3, 0.6
+                    on_press: root.remove_plant()
+                    size_hint: 0.9, None
+                    height: dp(100)
+
+                RoundedButton:
+                    text: 'Check Status'
+                    bg_color: 0.3, 0.8, 0.3, 0.6
+                    on_press: root.check_status()
+                    size_hint: 0.9, None
+                    height: dp(100)
+
+                RoundedButton:
+                    text: 'Settings'
+                    bg_color: 0.3, 0.8, 0.3, 0.6
+                    on_press: root.open_settings()
+                    size_hint: 0.9, None
+                    height: dp(100)
+
+            Label:
+                id: status_label
+                text: 'All systems operational'
+                font_size: '18sp'
+                color: 0, 0.5, 0, 1  # Dark green color
                 size_hint_y: None
-                height: self.minimum_height
+                height: dp(30)
+                halign: 'center'
+                valign: 'middle'
+                text_size: self.width, None
+                canvas.before:
+                    Color:
+                        rgba: 0, 0.5, 0, 0.2  # Translucent green background for status label
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(10), ]
+

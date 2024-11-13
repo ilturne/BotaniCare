@@ -1,4 +1,10 @@
 import kivy
+from kivy.config import Config
+
+# Set the window size for the Raspberry Pi screen
+Config.set('graphics', 'width', '800')  # Width of the Window
+Config.set('graphics', 'height', '480')  # Height of the Window
+
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.lang import Builder
