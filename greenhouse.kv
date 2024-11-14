@@ -43,7 +43,7 @@
                 cols: 2
                 spacing: dp(15)
                 padding: dp(10)
-                size_hint: (1, 0.6)
+                size_hint: (1, 0.3)
 
                 RoundedButton:
                     text: 'Add Plant'
@@ -73,6 +73,20 @@
                     size_hint: 0.9, None
                     height: dp(100)
 
+            # Add the plant list here
+            ScrollView:
+                size_hint: (1, 0.4)
+                do_scroll_x: False
+                do_scroll_y: True
+
+                BoxLayout:
+                    id: plant_list
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: dp(5)
+                    padding: dp(10)
+
             Label:
                 id: status_label
                 text: 'All systems operational'
@@ -90,4 +104,3 @@
                         pos: self.pos
                         size: self.size
                         radius: [dp(10), ]
-

@@ -6,7 +6,8 @@ Config.set('graphics', 'width', '800')  # Width of the Window
 Config.set('graphics', 'height', '480')  # Height of the Window
 
 from kivy.app import App
-from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.floatlayout import FloatLayout  # Import FloatLayout
+from kivy.uix.boxlayout import BoxLayout        # **Ensure BoxLayout is imported**
 from kivy.lang import Builder
 from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
@@ -17,15 +18,15 @@ from kivy.metrics import dp
 # Load the KV file
 Builder.load_file('greenhouse.kv')
 
-class GreenhouseApp(BoxLayout):
+class GreenhouseApp(FloatLayout):  # Inherits from FloatLayout as defined in KV
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.plants = []
 
     def add_plant(self):
-        content = BoxLayout(orientation='vertical', spacing=dp(10), padding=dp(10))
+        content = BoxLayout(orientation='vertical', spacing=dp(10), padding=dp(10))  # BoxLayout used here
         input_field = TextInput(hint_text='Enter plant name', multiline=False)
-        buttons = BoxLayout(size_hint_y=None, height=dp(50), spacing=dp(10))
+        buttons = BoxLayout(size_hint_y=None, height=dp(30), spacing=dp(10))
 
         btn_add = Button(text='Add', on_press=lambda x: self.add_plant_to_list(input_field.text))
         btn_cancel = Button(text='Cancel', on_press=lambda x: self.popup.dismiss())
@@ -59,7 +60,16 @@ class GreenhouseApp(BoxLayout):
     def update_plant_list(self):
         self.ids.plant_list.clear_widgets()
         for plant in self.plants:
-            self.ids.plant_list.add_widget(Label(text=plant, size_hint_y=None, height=dp(30)))
+            self.ids.plant_list.add_widget(
+                Label(
+                    text=plant,
+                    size_hint_y=None,
+                    height=dp(30),
+                    halign='left',
+                    valign='middle',
+                    text_size=(self.width, None)
+                )
+            )
 
     def check_status(self):
         self.ids.status_label.text = 'Check Status button pressed.'
