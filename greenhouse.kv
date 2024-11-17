@@ -13,6 +13,41 @@
             size: self.size
             radius: [dp(15), ]
 
+<StatusCard@BoxLayout>:
+    title: ''
+    value: ''
+    orientation: 'vertical'
+    size_hint: None, None
+    size: dp(220), dp(340)  # Adjust the width and height of the card size
+    padding: dp(10)
+    spacing: dp(10)
+
+    
+    Label:
+        id: title
+        text: root.title if hasattr(root, 'title') else 'NO_TITLE'
+        font_size: '31sp'  # font for titles
+        bold: False
+        color: 1, 1, 1, 1  # White text
+        size_hint_y: None
+        height: dp(70)
+        halign: 'center'
+        valign: 'middle'
+        text_size: self.width, None
+        
+
+    Label:
+        id: value
+        text: root.value if hasattr(root, 'value') else 'NO_VALUE'
+        font_size: '40sp'  # font for values
+        bold: False
+        color: 1, 1, 1, 1
+        size_hint: 1, 1
+        height: dp(400)
+        halign: 'center'
+        valign: 'middle'
+        text_size: self.width, None
+
 <GreenhouseApp>:
     FloatLayout:
         Image:
@@ -25,82 +60,165 @@
         BoxLayout:
             orientation: 'vertical'
             size_hint: 0.8, 0.8
-            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            pos_hint: {'center_x': 0.5, 'center_y': 0.45} # Center the BoxLayout
             spacing: dp(20)
 
-            Label:
-                text: 'System Status'
-                font_size: '28sp'
-                bold: True
-                color: 0, 0.5, 0, 1  # Darker green for text
+            # Status Grid wrapped in AnchorLayout
+            AnchorLayout:
+                anchor_x: 'center'
+                anchor_y: 'center'
                 size_hint_y: None
-                height: dp(40)
-                halign: 'center'
-                valign: 'middle'
-                text_size: self.width, None
+                height: dp(300)
 
-            GridLayout:
-                cols: 2
-                spacing: dp(15)
-                padding: dp(10)
-                size_hint: (1, 0.3)
+                GridLayout:
+                    cols: 4
+                    spacing: dp(30)  # Spacing between cards
+                    size_hint: None, None
+                    size: dp(970), dp(350)  # Total width calculated based on card sizes and spacing
 
-                RoundedButton:
-                    text: 'Add Plant'
-                    bg_color: 0.3, 0.8, 0.3, 0.6  # Softer, translucent green background
-                    on_press: root.add_plant()
-                    size_hint: 0.9, None
-                    height: dp(100)
+                    StatusCard:
+                        id: temperature_card
+                        title: 'Temperature'
+                        value: '80'
+                        canvas.before:
+                            Color:
+                                rgba: 0.78, 0.85, 0.68, 0.9  # Custom color for temperature card
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(20), ]
 
-                RoundedButton:
-                    text: 'Remove Plant'
-                    bg_color: 0.3, 0.8, 0.3, 0.6
-                    on_press: root.remove_plant()
-                    size_hint: 0.9, None
-                    height: dp(100)
+                    StatusCard:
+                        id: humidity_card
+                        title: 'Humidity'
+                        value: '50%'
+                        canvas.before:
+                            Color:
+                                rgba: 0.17, 0.25, 0.004, 0.9  # Custom color for temperature card
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(20), ]
 
-                RoundedButton:
-                    text: 'Check Status'
-                    bg_color: 0.3, 0.8, 0.3, 0.6
-                    on_press: root.check_status()
-                    size_hint: 0.9, None
-                    height: dp(100)
+                    StatusCard:
+                        id: soil_moisture_card
+                        title: 'Soil Moisture'
+                        value: '75%'
+                        canvas.before:
+                            Color:
+                                rgba: 0.53, 0.65, 0.29, 0.9  # Custom color for temperature card
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(20), ]
 
-                RoundedButton:
-                    text: 'Settings'
-                    bg_color: 0.3, 0.8, 0.3, 0.6
-                    on_press: root.open_settings()
-                    size_hint: 0.9, None
-                    height: dp(100)
+                    StatusCard:
+                        id: light_level_card
+                        title: 'Light Level'
+                        value: 'Good'
+                        canvas.before:
+                            Color:
+                                rgba: 0.65, 0.78, 0.50, 0.9  # Custom color for temperature card
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(20), ]
 
-            # Add the plant list here
-            ScrollView:
-                size_hint: (1, 0.4)
-                do_scroll_x: False
-                do_scroll_y: True
 
+            # Second Row: System Status and Alerts
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint_y: None
+                height: dp(300)
+                spacing: dp(30)
+                pos_hint: {'center_x': 0.53, 'center_y': 0.5}  # Center the BoxLayout
+
+                # System Status Section (under Temperature and Humidity)
                 BoxLayout:
-                    id: plant_list
                     orientation: 'vertical'
+                    size_hint_x: None
+                    width: dp(470)  # Matches combined width of Temperature and Humidity
                     size_hint_y: None
-                    height: self.minimum_height
-                    spacing: dp(5)
-                    padding: dp(10)
+                    height: dp(250)
+                    padding: dp(30)
+                    spacing: dp(10)
+                    canvas.before:
+                        Color:
+                            rgba: 0.78, 0.85, 0.68, 0.9
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(20), ]
 
-            Label:
-                id: status_label
-                text: 'All systems operational'
-                font_size: '18sp'
-                color: 0, 0.5, 0, 1  # Dark green color
-                size_hint_y: None
-                height: dp(30)
-                halign: 'center'
-                valign: 'middle'
-                text_size: self.width, None
-                canvas.before:
-                    Color:
-                        rgba: 0, 0.5, 0, 0.2  # Translucent green background for status label
-                    RoundedRectangle:
-                        pos: self.pos
-                        size: self.size
-                        radius: [dp(10), ]
+                    Label:
+                        text: 'System Status'
+                        font_size: '31sp'
+                        bold: False
+                        color: 1, 1, 1, 1
+                        size_hint_y: None
+                        height: dp(350)
+                        halign: 'center'
+                        valign: 'middle'
+                        text_size: self.size
+
+                    # Add your System Status content here
+
+                # New Box (same width as Soil Moisture)
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_x: None
+                    width: dp(220)  # Same width as Soil Moisture card
+                    size_hint_y: None
+                    height: dp(250)
+                    padding: dp(20)
+                    spacing: dp(10)
+                    canvas.before:
+                        Color:
+                            rgba: 0.53, 0.65, 0.29, 0.9
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(20), ]
+
+                    Label:
+                        text: 'New Section'
+                        font_size: '20sp'
+                        bold: True
+                        color: 1, 1, 1, 1
+                        size_hint_y: None
+                        height: dp(400)
+                        halign: 'center'
+                        valign: 'middle'
+                        text_size: self.size
+
+                    # Add your New Box content here
+
+                # Alerts Section (same width as Light Level)
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_x: None
+                    width: dp(220)  # Same width as Light Level card
+                    size_hint_y: None
+                    height: dp(250)
+                    padding: dp(20)
+                    spacing: dp(10)
+                    canvas.before:
+                        Color:
+                            rgba: 0.78, 0.85, 0.68, 1
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(20), ]
+
+                    Label:
+                        text: 'Alerts'
+                        font_size: '31sp'
+                        bold: False
+                        color: 1, 1, 1, 1
+                        size_hint_y: None
+                        height: dp(400)
+                        halign: 'center'
+                        valign: 'middle'
+                        text_size: self.size
+
+                    # Add your Alerts content here

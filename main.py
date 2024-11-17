@@ -1,10 +1,11 @@
 import kivy
 from kivy.config import Config
 
-# Set the window size for the Raspberry Pi screen
-Config.set('graphics', 'width', '800')  # Width of the Window
-Config.set('graphics', 'height', '480')  # Height of the Window
+# Sets the window size for the Raspberry Pi touch screen
+Config.set('graphics', 'width', '1280')  # Width of the Window
+Config.set('graphics', 'height', '720')  # Height of the Window
 
+from kivy.properties import StringProperty
 from kivy.app import App
 from kivy.uix.floatlayout import FloatLayout  # Import FloatLayout
 from kivy.uix.boxlayout import BoxLayout        # **Ensure BoxLayout is imported**
@@ -17,6 +18,10 @@ from kivy.metrics import dp
 
 # Load the KV file
 Builder.load_file('greenhouse.kv')
+
+class StatusCard(BoxLayout):
+    title = StringProperty('--')
+    value = StringProperty('--')
 
 class GreenhouseApp(FloatLayout):  # Inherits from FloatLayout as defined in KV
     def __init__(self, **kwargs):
