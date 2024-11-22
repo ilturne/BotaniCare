@@ -1,92 +1,125 @@
-import kivy
 from kivy.config import Config
 
-# Sets the window size for the Raspberry Pi touch screen
-Config.set('graphics', 'width', '1280')  # Width of the Window
-Config.set('graphics', 'height', '720')  # Height of the Window
+# Set the window size for the Raspberry Pi touch screen
+Config.set('graphics', 'width', '1280')  # Window width
+Config.set('graphics', 'height', '720')  # Window height
 
-from kivy.properties import StringProperty
 from kivy.app import App
-from kivy.uix.floatlayout import FloatLayout  # Import FloatLayout
-from kivy.uix.boxlayout import BoxLayout        # **Ensure BoxLayout is imported**
+from kivy.uix.floatlayout import FloatLayout
 from kivy.lang import Builder
-from kivy.uix.popup import Popup
-from kivy.uix.textinput import TextInput
-from kivy.uix.button import Button
-from kivy.uix.label import Label
-from kivy.metrics import dp
+from kivy.properties import StringProperty, ListProperty, NumericProperty
+from kivy.clock import Clock
+import random
 
 # Load the KV file
 Builder.load_file('greenhouse.kv')
 
-class StatusCard(BoxLayout):
-    title = StringProperty('--')
-    value = StringProperty('--')
+class StatusCard(FloatLayout):
+    """
+    Custom widget representing a status card with a title, value, background color,
+    ring color, and a customizable font size for the value label.
+    """
+    title = StringProperty('NO_TITLE')  # Card title
+    value = StringProperty('--')        # Value displayed on the card
+    ring_color = ListProperty([0.3, 0.6, 0.3, 0.8])  # Default ring color
+    bg_color = ListProperty([0.78, 0.85, 0.68, 0.9])  # Default background color
+    value_font_size = NumericProperty(30)  # Default font size for the value label
 
-class GreenhouseApp(FloatLayout):  # Inherits from FloatLayout as defined in KV
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.plants = []
-
-    def add_plant(self):
-        content = BoxLayout(orientation='vertical', spacing=dp(10), padding=dp(10))  # BoxLayout used here
-        input_field = TextInput(hint_text='Enter plant name', multiline=False)
-        buttons = BoxLayout(size_hint_y=None, height=dp(30), spacing=dp(10))
-
-        btn_add = Button(text='Add', on_press=lambda x: self.add_plant_to_list(input_field.text))
-        btn_cancel = Button(text='Cancel', on_press=lambda x: self.popup.dismiss())
-        buttons.add_widget(btn_add)
-        buttons.add_widget(btn_cancel)
-
-        content.add_widget(Label(text='Add a new plant'))
-        content.add_widget(input_field)
-        content.add_widget(buttons)
-
-        self.popup = Popup(title='Add Plant', content=content, size_hint=(0.8, 0.4))
-        self.popup.open()
-
-    def add_plant_to_list(self, plant_name):
-        if plant_name.strip():
-            self.plants.append(plant_name.strip())
-            self.update_plant_list()
-            self.ids.status_label.text = f'{plant_name} added.'
-        else:
-            self.ids.status_label.text = 'Plant name cannot be empty.'
-        self.popup.dismiss()
-
-    def remove_plant(self):
-        if self.plants:
-            plant_name = self.plants.pop()
-            self.update_plant_list()
-            self.ids.status_label.text = f'{plant_name} removed.'
-        else:
-            self.ids.status_label.text = 'No plants to remove.'
-
-    def update_plant_list(self):
-        self.ids.plant_list.clear_widgets()
-        for plant in self.plants:
-            self.ids.plant_list.add_widget(
-                Label(
-                    text=plant,
-                    size_hint_y=None,
-                    height=dp(30),
-                    halign='left',
-                    valign='middle',
-                    text_size=(self.width, None)
-                )
-            )
-
-    def check_status(self):
-        self.ids.status_label.text = 'Check Status button pressed.'
-        # Implement code to check sensor status
-
-    def open_settings(self):
-        self.ids.status_label.text = 'Settings button pressed.'
-        # Implement settings functionality here
+class GreenhouseApp(FloatLayout):
+    """
+    Main application widget that serves as the root layout.
+    """
+    pass
 
 class MyApp(App):
+    """
+    The main application class that builds and runs the app.
+    """
     def build(self):
-        return GreenhouseApp()
+        self.greenhouse_app = GreenhouseApp()
 
+        # Initialize simulation variables
+        self.current_temperature = 75.0
+        self.temperature_increasing = True
+
+        self.current_humidity = 0.50
+        self.humidity_increasing = True
+
+        self.current_light_level = 300.0  # Example value in lux
+        self.light_level_increasing = True
+
+        self.current_soil_moisture = 0.30  # Example value as a percentage
+        self.soil_moisture_increasing = True
+
+        # Schedule functions to simulate the environment
+        Clock.schedule_interval(self.simulate_temperature, 0.2)
+        Clock.schedule_interval(self.simulate_humidity, 0.2)
+        Clock.schedule_interval(self.simulate_light_level, 0.2)
+        Clock.schedule_interval(self.simulate_soil_moisture, 0.2)
+
+        return self.greenhouse_app
+
+    def simulate_temperature(self, dt):
+        """
+        Simulate the temperature fluctuating between 75°F and 80°F.
+        """
+        if self.temperature_increasing:
+            self.current_temperature += 0.1
+            if self.current_temperature >= 80.0:
+                self.temperature_increasing = False
+        else:
+            self.current_temperature -= 0.1
+            if self.current_temperature <= 75.0:
+                self.temperature_increasing = True
+
+        # Update the temperature display in the GreenhouseApp
+        self.greenhouse_app.ids.temperature_card.value = f"{self.current_temperature:.1f}°F"
+
+    def simulate_humidity(self, dt):
+        """
+        Simulate the humidity fluctuating between 40% and 60%.
+        """
+        self.humidity_increasing = 10
+        if self.current_humidity >= 0.90:
+            self.current_humidity = 0.40
+        else:
+            self.current_humidity += 0.01
+            self.current_humidity = random.uniform(0.40, 0.90)
+        # Update the humidity display in the GreenhouseApp
+        self.greenhouse_app.ids.humidity_card.value = f"{self.current_humidity:.0%}"
+
+    def simulate_light_level(self, dt):
+        """
+        Simulate the light level fluctuating between 200 and 800 lux.
+        """
+        if self.light_level_increasing:
+            self.current_light_level += 10
+            if self.current_light_level >= 800:
+                self.light_level_increasing = False
+        else:
+            self.current_light_level -= 10
+            if self.current_light_level <= 200:
+                self.light_level_increasing = True
+
+        # Update the light level display in the GreenhouseApp
+        self.greenhouse_app.ids.light_level_card.value = f"{self.current_light_level:.0f} lux"
+
+    def simulate_soil_moisture(self, dt):
+        """
+        Simulate the soil moisture fluctuating between 20% and 40%.
+        """
+        if self.soil_moisture_increasing:
+            self.current_soil_moisture += 0.01
+            if self.current_soil_moisture >= 0.40:
+                self.soil_moisture_increasing = False
+        else:
+            self.current_soil_moisture -= 0.01
+            if self.current_soil_moisture <= 0.20:
+                self.soil_moisture_increasing = True
+
+        # Update the soil moisture display in the GreenhouseApp
+        self.greenhouse_app.ids.soil_moisture_card.value = f"{self.current_soil_moisture:.0%}"
+
+# Run the app
 if __name__ == '__main__':
     MyApp().run()
