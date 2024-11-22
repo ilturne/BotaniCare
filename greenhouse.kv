@@ -121,6 +121,8 @@
                 pos: self.x + dp(4), self.y - dp(4)  # Offset for shadow
                 size: self.size
                 radius: [dp(20), ]  # Same corner radius as the main card
+
+            # Card background
             Color:
                 rgba: 0.78, 0.85, 0.68, 0.9
             RoundedRectangle:
@@ -128,6 +130,7 @@
                 size: self.size
                 radius: [dp(20), ]
 
+        # Title Label
         Label:
             text: "System Status"
             font_size: "31sp"
@@ -139,6 +142,160 @@
             halign: 'center'
             valign: 'middle'
             text_size: self.width, None
+
+        # Fan Section
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: None, None
+            size: dp(400), dp(40)
+            pos_hint: {'center_x': 0.5, 'center_y': 0.67}
+            spacing: dp(20)
+
+            canvas.before:
+                Color:
+                    rgba: 1, 1, 1, 1  # Light gray line
+                Rectangle:
+                    pos: self.x + dp(30), self.y - dp(10)  # Position the line under the layout
+                    size: self.width - dp(30), dp(2)  # Full width of the BoxLayout, 1 dp height
+            
+            # Status Light
+            Widget:
+                size_hint: None, None
+                size: dp(12), dp(12)
+                pos_hint: {'center_x': 0.5, 'center_y': 0.47}  # Adjusted position
+                canvas.before:
+                    Color:
+                        rgba: 0.3, 0.6, 0.3, 1.0  # This will need to be dynamic later
+                    Ellipse:
+                        pos: self.pos
+                        size: self.size
+
+            # Name Label
+            Label:
+                text: "Fan"
+                font_size: "25sp"
+                color: 1, 1, 1, 1
+                halign: 'left'
+                valign: 'middle'
+                text_size: self.width, None
+            
+            Button:
+                text: "Override"
+                font_size: "20sp"
+                size_hint: None, None
+                size: dp(120), dp(40)
+                background_normal: ''
+                background_color: 0, 0, 0, 0 
+                background_color: 1, 1, 1, 1  # White button
+                color: 0.263, 0.263, 0.263, 1
+                on_press: print("Fan Override Button Pressed!")
+                canvas.before:
+                    Color:
+                        rgba: 1, 1, 1, 1  # White background
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(10), ]  # Curved corners
+
+        # Lighting Section
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: None, None
+            size: dp(400), dp(40)
+            pos_hint: {'center_x': 0.5, 'center_y': 0.43}
+            spacing: dp(20)
+
+            canvas.before:
+                Color:
+                    rgba: 1, 1, 1, 1  # Light gray line
+                Rectangle:
+                    pos: self.x + dp(30), self.y - dp(10)  # Position the line under the layout
+                    size: self.width - dp(30), dp(2)  # Full width of the BoxLayout, 1 dp height
+            
+            # Status Light
+            Widget:
+                size_hint: None, None
+                size: dp(12), dp(12)
+                pos_hint: {'center_x': 0.5, 'center_y': 0.47}  # Adjusted position
+                canvas.before:
+                    Color:
+                        rgba: 0.3, 0.6, 0.3, 1.0  # This will need to be dynamic later
+                    Ellipse:
+                        pos: self.pos
+                        size: self.size
+
+            # Name Label
+            Label:
+                text: "Lighting"
+                font_size: "25sp"
+                color: 1, 1, 1, 1
+                halign: 'left'
+                valign: 'middle'
+                text_size: self.width, None
+            
+            Button:
+                text: "Override"
+                font_size: "20sp"
+                size_hint: None, None
+                size: dp(120), dp(40)
+                background_normal: ''
+                background_color: 1, 1, 1, 1  # White button
+                color: 0.263, 0.263, 0.263, 1
+                on_press: print("Lighting Override Button Pressed!")
+                canvas.before:
+                    Color:
+                        rgba: 1, 1, 1, 1  # White background
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(10), ]  # Curved corners
+
+        # Watering Section
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: None, None
+            size: dp(400), dp(40)
+            pos_hint: {'center_x': 0.5, 'center_y': 0.19}
+            spacing: dp(20)
+            
+            # Status Light
+            Widget:
+                size_hint: None, None
+                size: dp(12), dp(12)
+                pos_hint: {'center_x': 0.5, 'center_y': 0.47}  # Adjusted position
+                canvas.before:
+                    Color:
+                        rgba: 0.3, 0.6, 0.3, 1.0  # This will need to be dynamic later
+                    Ellipse:
+                        pos: self.pos
+                        size: self.size
+
+            # Name Label
+            Label:
+                text: "Water Pump"
+                font_size: "25sp"
+                color: 1, 1, 1, 1
+                halign: 'left'
+                valign: 'middle'
+                text_size: self.width, None
+            
+            Button:
+                text: "Override"
+                font_size: "20sp"
+                size_hint: None, None
+                size: dp(120), dp(40)
+                background_normal: ''
+                background_color: 1, 1, 1, 1  # White button
+                color: 0.263, 0.263, 0.263, 1
+                on_press: print("Water Pump Override Button Pressed!")
+                canvas.before:
+                    Color:
+                        rgba: 1, 1, 1, 1  # White background
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(10), ]  # Curved corners
+            
 
     # Plant List Card
     FloatLayout:
@@ -301,3 +458,72 @@
             halign: 'center'
             valign: 'middle'
             text_size: self.width, None
+
+        # Alerts Content Section
+        ScrollView:
+            size_hint: 0.7, 0.62
+            pos_hint: {'center_x': 0.5, 'center_y': 0.50}
+            bar_width: dp(5)  # Customize scrollbar width
+            scroll_type: ['bars', 'content']
+
+            canvas.before:
+                Color:
+                    rgba: 1, 1, 1, 1  # White background color
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(10), ]  # Rounded corners
+
+            BoxLayout:
+                id: alerts_list
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(30)
+                padding: [dp(10), dp(20), dp(10), dp(20)]
+
+                # Add filler alerts here
+                Label:
+                    text: "Alert: [color=434343]Water is Getting Low![/color]"
+                    font_size: "9sp"
+                    markup: True
+                    color: 0.2, 0.4, 0.2, 1  # Green color for normal alerts
+                    text_size: self.width, None
+                    halign: 'left'
+                    valign: 'middle'
+
+                Label:
+                    text: "[color=FFA500]Warning:[/color] [color=434343]Temperature below optimal range (12°C)[/color]"
+                    font_size: "9sp"
+                    markup: True
+                    text_size: self.width, None
+                    halign: 'left'
+                    valign: 'middle'
+
+                Label:
+                    text: "[color=FF0000]Critical:[/color] [color=434343]Sudden temperature drop detected![/color]"
+                    markup: True
+                    font_size: "9sp"
+                    markup: True
+                    text_size: self.width, None
+                    halign: 'left'
+                    valign: 'middle'
+
+        # "View All" Button
+        Button:
+            text: "View All"
+            font_size: "18sp"
+            size_hint: None, None
+            size: dp(100), dp(30)
+            pos_hint: {'center_x': 0.5, 'y': 0.05}
+            background_normal: ''
+            background_color: 1, 1, 1, 1  # White button
+            color: 0.263, 0.263, 0.263, 1  # Gray text
+            on_press: print("Navigating to Alerts Page")
+            canvas.before:
+                Color:
+                    rgba: 1, 1, 1, 1  # White background
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(10), ]  # Rounded corners
