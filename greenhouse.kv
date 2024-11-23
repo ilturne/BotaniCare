@@ -34,7 +34,7 @@
         pos_hint: {'center_x': 0.5, 'center_y': 0.5}  # Centered in the card
         canvas.before:
             Color:
-                rgba: (self.ring_color if hasattr(self, 'ring_color') and self.ring_color is not None else (0.3, 0.6, 0.3, 0.8))
+                rgba: root.ring_color if root.ring_color else [0.3, 0.6, 0.3, 0.8] 
             Line:
                 width: dp(5)  # Thickness of the ring
                 circle: (self.center_x, self.center_y, self.width / 2)  # Circular ring
@@ -165,7 +165,7 @@
                 pos_hint: {'center_x': 0.5, 'center_y': 0.47}  # Adjusted position
                 canvas.before:
                     Color:
-                        rgba: 0.3, 0.6, 0.3, 1.0  # This will need to be dynamic later
+                        rgba: app.fan_status_color  
                     Ellipse:
                         pos: self.pos
                         size: self.size
@@ -186,9 +186,8 @@
                 size: dp(120), dp(40)
                 background_normal: ''
                 background_color: 0, 0, 0, 0 
-                background_color: 1, 1, 1, 1  # White button
                 color: 0.263, 0.263, 0.263, 1
-                on_press: print("Fan Override Button Pressed!")
+                on_press: app.toggle_fan_status()
                 canvas.before:
                     Color:
                         rgba: 1, 1, 1, 1  # White background
@@ -219,7 +218,7 @@
                 pos_hint: {'center_x': 0.5, 'center_y': 0.47}  # Adjusted position
                 canvas.before:
                     Color:
-                        rgba: 0.3, 0.6, 0.3, 1.0  # This will need to be dynamic later
+                        rgba: app.lighting_status_color
                     Ellipse:
                         pos: self.pos
                         size: self.size
@@ -239,9 +238,9 @@
                 size_hint: None, None
                 size: dp(120), dp(40)
                 background_normal: ''
-                background_color: 1, 1, 1, 1  # White button
+                background_color: 0, 0, 0, 0
                 color: 0.263, 0.263, 0.263, 1
-                on_press: print("Lighting Override Button Pressed!")
+                on_press: app.toggle_lighting_status()
                 canvas.before:
                     Color:
                         rgba: 1, 1, 1, 1  # White background
@@ -265,7 +264,7 @@
                 pos_hint: {'center_x': 0.5, 'center_y': 0.47}  # Adjusted position
                 canvas.before:
                     Color:
-                        rgba: 0.3, 0.6, 0.3, 1.0  # This will need to be dynamic later
+                        rgba: app.water_pump_status_color
                     Ellipse:
                         pos: self.pos
                         size: self.size
@@ -285,9 +284,9 @@
                 size_hint: None, None
                 size: dp(120), dp(40)
                 background_normal: ''
-                background_color: 1, 1, 1, 1  # White button
+                background_color: 0, 0, 0, 0
                 color: 0.263, 0.263, 0.263, 1
-                on_press: print("Water Pump Override Button Pressed!")
+                on_press: app.toggle_water_pump_status()
                 canvas.before:
                     Color:
                         rgba: 1, 1, 1, 1  # White background
@@ -350,7 +349,7 @@
                     radius: [dp(5), ]
 
             Label:
-                text: "Total Plants:"
+                text: f"Total Plants:   {root.total_plants}"
                 font_size: "20sp"
                 color: 1, 1, 1, 1
                 halign: 'left'
@@ -374,7 +373,7 @@
                     radius: [dp(5), ]
 
             Label:
-                text: "Total Species:"
+                text: f"Total Species:  {root.total_species}"
                 font_size: "20sp"
                 color: 1, 1, 1, 1
                 halign: 'left'
@@ -398,7 +397,7 @@
                     radius: [dp(5), ]
 
             Label:
-                text: "Available Spots:"
+                text: f"Available Spots:   {root.available_spots}"
                 font_size: "18sp"
                 color: 1, 1, 1, 1
                 halign: 'left'
@@ -414,7 +413,7 @@
             size: dp(150), dp(40)
             pos_hint: {'center_x': 0.5, 'y': 0.15}
             background_normal: ''
-            background_color: 1, 1, 1, 1  # White button background
+            background_color: 0, 0, 0, 0
             color:  0.263, 0.263, 0.263, 1
             on_press: print("Going to Plant Home!")
             canvas.before:
@@ -430,7 +429,7 @@
         id: system_status_card
         size_hint: None, None
         size: dp(203), dp(282)
-        pos: dp(897), dp(20)
+        pos: dp(897), dp(20) 
 
         canvas.before:
             # Shadow effect (slightly offset and blurred)
@@ -454,7 +453,7 @@
             color: 1, 1, 1, 1
             size_hint_y: None
             height: dp(40)
-            pos_hint: {'center_x': 0.5, 'top': 0.95}
+            pos_hint: {'center_x': 0.5, 'top': 0.95} 
             halign: 'center'
             valign: 'middle'
             text_size: self.width, None
@@ -517,7 +516,7 @@
             size: dp(100), dp(30)
             pos_hint: {'center_x': 0.5, 'y': 0.05}
             background_normal: ''
-            background_color: 1, 1, 1, 1  # White button
+            background_color: 0, 0, 0, 0
             color: 0.263, 0.263, 0.263, 1  # Gray text
             on_press: print("Navigating to Alerts Page")
             canvas.before:
