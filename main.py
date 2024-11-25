@@ -19,7 +19,6 @@ class StatusCard(FloatLayout):
     Custom widget representing a status card with a title, value, background color,
     ring color, and a customizable font size for the value label.
     """
-    title = StringProperty('NO_TITLE')  # Card title
     value = StringProperty('--')        # Value displayed on the card
     ring_color = ListProperty([0.3, 0.6, 0.3, 0.8])  # Default ring color
     bg_color = ListProperty([0.78, 0.85, 0.68, 0.9])  # Default background color
@@ -169,6 +168,5 @@ class MyApp(App):
             self.current_soil_moisture, self.SOIL_MOISTURE_THRESHOLDS
         )
 
-# Run the app
 if __name__ == '__main__':
     MyApp().run()
