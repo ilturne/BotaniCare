@@ -47,7 +47,7 @@ If you're a new developer joining the project, follow the steps below to set up 
 First, clone the project repository:
 
 ```bash
-git clone https://github.com/your-organization/greenhouse-iot-project.git
+git clone https://github.com/LoganMattson/BotaniCare.git
 cd greenhouse-iot-project
 ``` 
 
@@ -67,22 +67,29 @@ Once your virtual environment is activated, install the required Python librarie
 ```bash
 pip install -r requirements.txt
 ```
+**On a Raspberry Pi 5 (Linux):**
+
+First, ensure system-level dependencies are installed:
+```bash
+sudo apt-get update
+sudo apt-get install python3-pip python3-dev \
+    build-essential git \
+    libgl1-mesa-dev libgles2-mesa-dev \
+    zlib1g-dev libjpeg-dev \
+    libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev
+```
+Then install the Python dependencies for Raspberry Pi 5:
+```bash
+pip3 install -r requirements_rpi.txt
+```
 
 This will install the necessary libraries, including kivy, pyserial, and others required for the project.
 
-### 4. Set Up the Development Board
+### 4. Connect Your Raspberry Pi 5 Hardware
 
-Ensure you have the required development board (LattePanda Sigma or Raspberry Pi 5) connected to your machine. The system will communicate with the sensors and actuators through the board’s GPIO pins or the Arduino co-processor.
-
-For LattePanda:
-
-- Ensure Windows/Linux is installed and running.
-- Set up the Arduino IDE for microcontroller communication.
-
-For Raspberry Pi:
-
-- Ensure Linux is installed.
-- Access the GPIO pins to connect the sensors and actuators.
+- Ensure your Raspberry Pi 5 is running a supported Linux-based OS (e.g., Raspberry Pi OS).
+- Connect sensors and actuators to the GPIO pins as specified by your project’s hardware design.
+- Connect a touch screen or display if required.
 
 ### 5. Set Up ```systemd``` for Automatic Startup (Optional)
 
@@ -103,7 +110,7 @@ After=network.target
 ExecStart=/usr/bin/python3 /path/to/your/main.py
 WorkingDirectory=/path/to/your/project
 Restart=always
-User=your-username
+User=pi
 
 [Install]
 WantedBy=multi-user.target

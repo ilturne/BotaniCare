@@ -1,72 +1,89 @@
 #:kivy 2.3.0
 
-<StatusCard@FloatLayout>:
-    title: 'NO_TITLE'  # Card title
-    value: '--'        # Default card value
-    ring_color: 0.3, 0.6, 0.3, 0.8  # Default ring color
-    background_color: 0.78, 0.85, 0.68, 0.9  # Default background color
-    value_font_size: 30  # Default font size for the value label
+<BaseCard@FloatLayout>:
     size_hint: None, None
-    size: dp(203), dp(345)
-
     canvas.before:
-
-        # Shadow effect (slightly offset and blurred)
+        # Drop shadow
         Color:
             rgba: 0, 0, 0, 0.16
         RoundedRectangle:
-            pos: self.x + dp(4), self.y - dp(4)  # Offset for shadow
+            pos: self.x + dp(4), self.y - dp(4)
             size: self.size
-            radius: [dp(20), ]  # Same corner radius as the main card
-
-        # Background rectangle with rounded corners
+            radius: [dp(20), ]
+        # Main card background
         Color:
-            rgba: (self.bg_color if hasattr(self, 'bg_color') and self.bg_color is not None else (0.78, 0.85, 0.68, 0.9))
+            rgba: root.bg_color if hasattr(root, "bg_color") else (0.78, 0.85, 0.68, 0.9)
         RoundedRectangle:
             pos: self.pos
             size: self.size
             radius: [dp(20), ]
 
-    # Status ring (circular indicator)
+<StatusCard@BaseCard>:
+    title: 'NO_TITLE'
+    value: '--'
+    ring_color: 0.3, 0.6, 0.3, 0.8
+    bg_color: 0.78, 0.85, 0.68, 0.9
+    value_font_size: 30
+    size: dp(203), dp(345)
+
     Widget:
         size_hint: None, None
-        size: dp(150), dp(150)  # Ring size
-        pos_hint: {'center_x': 0.5, 'center_y': 0.5}  # Centered in the card
+        size: dp(150), dp(150)
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
         canvas.before:
             Color:
-                rgba: root.ring_color if root.ring_color else [0.3, 0.6, 0.3, 0.8] 
+                rgba: root.ring_color
             Line:
-                width: dp(5)  # Thickness of the ring
-                circle: (self.center_x, self.center_y, self.width / 2)  # Circular ring
+                width: dp(5)
+                circle: (self.center_x, self.center_y, self.width / 2)
 
-    # Title label
     Label:
         text: root.title
         font_size: "31sp"
-        bold: False
         color: 1, 1, 1, 1
         size_hint_y: None
         height: dp(40)
-        pos_hint: {'center_x': 0.5, 'top': 0.95}  # Top of the card
+        pos_hint: {'center_x': 0.5, 'top': 0.95}
         halign: 'center'
         valign: 'middle'
         text_size: self.width, None
 
-    # Value label (inside the ring)
     Label:
         text: root.value
-        font_size: f"{root.value_font_size}sp"  # Use the value_font_size property
-        bold: False
+        font_size: f"{root.value_font_size}sp"
         color: 1, 1, 1, 1
         size_hint: None, None
         size: dp(100), dp(100)
-        pos_hint: {'center_x': 0.5, 'center_y': 0.5}  # Centered in the ring
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
         halign: 'center'
         valign: 'middle'
         text_size: self.size
 
+<WhiteButton@Button>:
+    font_size: "20sp"
+    size_hint: None, None
+    size: dp(120), dp(40)
+    background_normal: ''
+    background_color: 0, 0, 0, 0
+    color: 0.263, 0.263, 0.263, 1
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(10), ]
+
+<SystemStatusCard@BaseCard>:
+    size: dp(436), dp(282)
+
+<PlantListCard@BaseCard>:
+    size: dp(203), dp(282)
+
+<AlertCard@BaseCard>:
+    size: dp(203), dp(282)
+
 <GreenhouseApp>:
-    # Background image
     Image:
         source: 'MAIN_BACKGROUND.png'
         allow_stretch: True
@@ -74,67 +91,44 @@
         size_hint: (1, 1)
         pos_hint: {'center_x': 0.5, 'center_y': 0.5}
 
-    # Temperature StatusCard
+    # Status Cards
     StatusCard:
         id: temperature_card
         title: "Temperature"
-        bg_color: 0.78, 0.85, 0.68, 0.9  # Custom background color
-        value_font_size: 30  # Custom font size
+        bg_color: 0.78, 0.85, 0.68, 0.9
+        value_font_size: 30
         pos: dp(189), dp(325)
 
-    # Humidity StatusCard
     StatusCard:
         id: humidity_card
         title: "Humidity"
-        bg_color: 0.17, 0.25, 0.004, 0.9  # Custom background color
-        value_font_size: 51  # Custom font size
+        bg_color: 0.17, 0.25, 0.004, 0.9
+        value_font_size: 51
         pos: dp(425), dp(325)
 
-    # Soil Moisture Card
     StatusCard:
         id: soil_moisture_card
         title: "Soil Moisture"
-        bg_color: 0.53, 0.65, 0.29, 0.9  # Custom background color
-        value_font_size: 51  # Custom font size
+        bg_color: 0.53, 0.65, 0.29, 0.9
+        value_font_size: 51
         pos: dp(661), dp(325)
 
-    # Light Level Card
     StatusCard:
         id: light_level_card
         title: "Light Level"
-        bg_color: 0.65, 0.78, 0.50, 0.9  # Custom background color
-        value_font_size: 35  # Custom font size
+        bg_color: 0.65, 0.78, 0.50, 0.9
+        value_font_size: 35
         pos: dp(897), dp(325)
 
     # System Status Card
-    FloatLayout:
+    SystemStatusCard:
         id: system_status_card
-        size_hint: None, None
-        size: dp(436), dp(282)
+        bg_color: 0.78, 0.85, 0.68, 0.9
         pos: dp(189), dp(20)
 
-        canvas.before:
-            # Shadow effect (slightly offset and blurred)
-            Color:
-                rgba: 0, 0, 0, 0.16
-            RoundedRectangle:
-                pos: self.x + dp(4), self.y - dp(4)  # Offset for shadow
-                size: self.size
-                radius: [dp(20), ]  # Same corner radius as the main card
-
-            # Card background
-            Color:
-                rgba: 0.78, 0.85, 0.68, 0.9
-            RoundedRectangle:
-                pos: self.pos
-                size: self.size
-                radius: [dp(20), ]
-
-        # Title Label
         Label:
             text: "System Status"
             font_size: "31sp"
-            bold: False
             color: 1, 1, 1, 1
             size_hint_y: None
             height: dp(40)
@@ -153,24 +147,22 @@
 
             canvas.before:
                 Color:
-                    rgba: 1, 1, 1, 1  # Light gray line
+                    rgba: 1, 1, 1, 1
                 Rectangle:
-                    pos: self.x + dp(30), self.y - dp(10)  # Position the line under the layout
-                    size: self.width - dp(30), dp(2)  # Full width of the BoxLayout, 1 dp height
-            
-            # Status Light
+                    pos: self.x + dp(30), self.y - dp(10)
+                    size: self.width - dp(30), dp(2)
+
             Widget:
                 size_hint: None, None
                 size: dp(12), dp(12)
-                pos_hint: {'center_x': 0.5, 'center_y': 0.47}  # Adjusted position
+                pos_hint: {'center_x': 0.5, 'center_y': 0.47}
                 canvas.before:
                     Color:
-                        rgba: app.fan_status_color  
+                        rgba: app.fan_status_color
                     Ellipse:
                         pos: self.pos
                         size: self.size
 
-            # Name Label
             Label:
                 text: "Fan"
                 font_size: "25sp"
@@ -178,23 +170,10 @@
                 halign: 'left'
                 valign: 'middle'
                 text_size: self.width, None
-            
-            Button:
+
+            WhiteButton:
                 text: "Override"
-                font_size: "20sp"
-                size_hint: None, None
-                size: dp(120), dp(40)
-                background_normal: ''
-                background_color: 0, 0, 0, 0 
-                color: 0.263, 0.263, 0.263, 1
                 on_press: app.toggle_fan_status()
-                canvas.before:
-                    Color:
-                        rgba: 1, 1, 1, 1  # White background
-                    RoundedRectangle:
-                        pos: self.pos
-                        size: self.size
-                        radius: [dp(10), ]  # Curved corners
 
         # Lighting Section
         BoxLayout:
@@ -206,16 +185,15 @@
 
             canvas.before:
                 Color:
-                    rgba: 1, 1, 1, 1  # Light gray line
+                    rgba: 1, 1, 1, 1
                 Rectangle:
-                    pos: self.x + dp(30), self.y - dp(10)  # Position the line under the layout
-                    size: self.width - dp(30), dp(2)  # Full width of the BoxLayout, 1 dp height
-            
-            # Status Light
+                    pos: self.x + dp(30), self.y - dp(10)
+                    size: self.width - dp(30), dp(2)
+
             Widget:
                 size_hint: None, None
                 size: dp(12), dp(12)
-                pos_hint: {'center_x': 0.5, 'center_y': 0.47}  # Adjusted position
+                pos_hint: {'center_x': 0.5, 'center_y': 0.47}
                 canvas.before:
                     Color:
                         rgba: app.lighting_status_color
@@ -223,7 +201,6 @@
                         pos: self.pos
                         size: self.size
 
-            # Name Label
             Label:
                 text: "Lighting"
                 font_size: "25sp"
@@ -231,37 +208,26 @@
                 halign: 'left'
                 valign: 'middle'
                 text_size: self.width, None
-            
-            Button:
-                text: "Override"
-                font_size: "20sp"
-                size_hint: None, None
-                size: dp(120), dp(40)
-                background_normal: ''
-                background_color: 0, 0, 0, 0
-                color: 0.263, 0.263, 0.263, 1
-                on_press: app.toggle_lighting_status()
-                canvas.before:
-                    Color:
-                        rgba: 1, 1, 1, 1  # White background
-                    RoundedRectangle:
-                        pos: self.pos
-                        size: self.size
-                        radius: [dp(10), ]  # Curved corners
 
-        # Watering Section
+            WhiteButton:
+                text: "Override"
+                on_press: app.toggle_lighting_status()
+
+        # Water Pump Section
         BoxLayout:
             orientation: 'horizontal'
             size_hint: None, None
             size: dp(400), dp(40)
             pos_hint: {'center_x': 0.5, 'center_y': 0.19}
             spacing: dp(20)
-            
-            # Status Light
+
+            # No divider line before water pump in original design
+            # so we omit the canvas.before line here.
+
             Widget:
                 size_hint: None, None
                 size: dp(12), dp(12)
-                pos_hint: {'center_x': 0.5, 'center_y': 0.47}  # Adjusted position
+                pos_hint: {'center_x': 0.5, 'center_y': 0.47}
                 canvas.before:
                     Color:
                         rgba: app.water_pump_status_color
@@ -269,7 +235,6 @@
                         pos: self.pos
                         size: self.size
 
-            # Name Label
             Label:
                 text: "Water Pump"
                 font_size: "25sp"
@@ -277,54 +242,20 @@
                 halign: 'left'
                 valign: 'middle'
                 text_size: self.width, None
-            
-            Button:
+
+            WhiteButton:
                 text: "Override"
-                font_size: "20sp"
-                size_hint: None, None
-                size: dp(120), dp(40)
-                background_normal: ''
-                background_color: 0, 0, 0, 0
-                color: 0.263, 0.263, 0.263, 1
                 on_press: app.toggle_water_pump_status()
-                canvas.before:
-                    Color:
-                        rgba: 1, 1, 1, 1  # White background
-                    RoundedRectangle:
-                        pos: self.pos
-                        size: self.size
-                        radius: [dp(10), ]  # Curved corners
-            
 
     # Plant List Card
-    FloatLayout:
+    PlantListCard:
         id: plant_list_card
-        size_hint: None, None
-        size: dp(203), dp(282)
+        bg_color: 0.17, 0.25, 0.004, 0.9
         pos: dp(661), dp(20)
 
-        canvas.before:
-            # Shadow effect (slightly offset and blurred)
-            Color:
-                rgba: 0, 0, 0, 0.16
-            RoundedRectangle:
-                pos: self.x + dp(4), self.y - dp(4)  # Offset for shadow
-                size: self.size
-                radius: [dp(20), ]  # Same corner radius as the main card
-
-            # Card background
-            Color:
-                rgba: 0.17, 0.25, 0.004, 0.9  # Custom background color
-            RoundedRectangle:
-                pos: self.pos
-                size: self.size
-                radius: [dp(20), ]
-
-        # Title Label
         Label:
             text: "Plant List"
             font_size: "31sp"
-            bold: False
             color: 1, 1, 1, 1
             size_hint_y: None
             height: dp(40)
@@ -405,73 +336,43 @@
                 text_size: self.width, None
                 padding_x: dp(10)
 
-        # Plant Home Button
-        Button:
+        WhiteButton:
             text: "Plant Home"
-            font_size: "20sp"
             size_hint: None, None
             size: dp(150), dp(40)
             pos_hint: {'center_x': 0.5, 'y': 0.15}
-            background_normal: ''
-            background_color: 0, 0, 0, 0
-            color:  0.263, 0.263, 0.263, 1
             on_press: print("Going to Plant Home!")
-            canvas.before:
-                Color:
-                    rgba: 0.9, 0.9, 0.9, 1  # Slightly off-white background for contrast
-                RoundedRectangle:
-                    pos: self.pos
-                    size: self.size
-                    radius: [dp(10), ]
 
     # Alert Card
-    FloatLayout:
-        id: system_status_card
-        size_hint: None, None
-        size: dp(203), dp(282)
-        pos: dp(897), dp(20) 
-
-        canvas.before:
-            # Shadow effect (slightly offset and blurred)
-            Color:
-                rgba: 0, 0, 0, 0.16
-            RoundedRectangle:
-                pos: self.x + dp(4), self.y - dp(4)  # Offset for shadow
-                size: self.size
-                radius: [dp(20), ]  # Same corner radius as the main card
-            Color:
-                rgba: 0.78, 0.85, 0.68, 0.9
-            RoundedRectangle:
-                pos: self.pos
-                size: self.size
-                radius: [dp(20), ]
+    AlertCard:
+        id: alert_card
+        bg_color: 0.78, 0.85, 0.68, 0.9
+        pos: dp(897), dp(20)
 
         Label:
             text: "Alerts"
             font_size: "31sp"
-            bold: False
             color: 1, 1, 1, 1
             size_hint_y: None
             height: dp(40)
-            pos_hint: {'center_x': 0.5, 'top': 0.95} 
+            pos_hint: {'center_x': 0.5, 'top': 0.95}
             halign: 'center'
             valign: 'middle'
             text_size: self.width, None
 
-        # Alerts Content Section
         ScrollView:
             size_hint: 0.7, 0.62
             pos_hint: {'center_x': 0.5, 'center_y': 0.50}
-            bar_width: dp(5)  # Customize scrollbar width
+            bar_width: dp(5)
             scroll_type: ['bars', 'content']
 
             canvas.before:
                 Color:
-                    rgba: 1, 1, 1, 1  # White background color
+                    rgba: 1, 1, 1, 1
                 RoundedRectangle:
                     pos: self.pos
                     size: self.size
-                    radius: [dp(10), ]  # Rounded corners
+                    radius: [dp(10), ]
 
             BoxLayout:
                 id: alerts_list
@@ -481,12 +382,11 @@
                 spacing: dp(30)
                 padding: [dp(10), dp(20), dp(10), dp(20)]
 
-                # Add filler alerts here
                 Label:
                     text: "Alert: [color=434343]Water is Getting Low![/color]"
                     font_size: "9sp"
                     markup: True
-                    color: 0.2, 0.4, 0.2, 1  # Green color for normal alerts
+                    color: 0.2, 0.4, 0.2, 1
                     text_size: self.width, None
                     halign: 'left'
                     valign: 'middle'
@@ -501,28 +401,16 @@
 
                 Label:
                     text: "[color=FF0000]Critical:[/color] [color=434343]Sudden temperature drop detected![/color]"
-                    markup: True
                     font_size: "9sp"
                     markup: True
                     text_size: self.width, None
                     halign: 'left'
                     valign: 'middle'
 
-        # "View All" Button
-        Button:
+        WhiteButton:
             text: "View All"
             font_size: "18sp"
             size_hint: None, None
             size: dp(100), dp(30)
             pos_hint: {'center_x': 0.5, 'y': 0.05}
-            background_normal: ''
-            background_color: 0, 0, 0, 0
-            color: 0.263, 0.263, 0.263, 1  # Gray text
             on_press: print("Navigating to Alerts Page")
-            canvas.before:
-                Color:
-                    rgba: 1, 1, 1, 1  # White background
-                RoundedRectangle:
-                    pos: self.pos
-                    size: self.size
-                    radius: [dp(10), ]  # Rounded corners
