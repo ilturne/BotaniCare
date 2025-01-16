@@ -1,0 +1,15 @@
+#:kivy 2.3.0
+
+<PlantHomeScreen>:
+    name: "PlantHome"
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            text: "Welcome to Plant Home!"
+            font_size: "24sp"
+        Button:
+            text: "Back to Home"
+            size_hint: None, None
+            size: dp(150), dp(40)
+            on_release:
+                app.root.current = 'home'

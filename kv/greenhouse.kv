@@ -85,7 +85,7 @@
 
 <GreenhouseApp>:
     Image:
-        source: 'MAIN_BACKGROUND.png'
+        source: 'resources/MAIN_BACKGROUND.png'
         allow_stretch: True
         keep_ratio: False
         size_hint: (1, 1)
@@ -341,7 +341,7 @@
             size_hint: None, None
             size: dp(150), dp(40)
             pos_hint: {'center_x': 0.5, 'y': 0.15}
-            on_press: print("Going to Plant Home!")
+            on_release: app.root.current = "PlantHome"
 
     # Alert Card
     AlertCard:
