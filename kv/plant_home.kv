@@ -3,11 +3,10 @@
 <SidebarButton@Button>:
     background_normal: ''
     background_color: 0, 0, 0, 0  # Transparent background
-    icon_source: '' 
+    icon_source: ''
     selected: False
 
     canvas.before:
-        # Highlight background if selected
         Color:
             rgba: (0.172, 0.251, 0.004, 0.55) if self.selected else (0, 0, 0, 0)  # Darker green if selected
         RoundedRectangle:
@@ -21,25 +20,44 @@
         center_x: root.center_x
         center_y: root.center_y
 
+<HeaderButton@Button>:
+    font_size: "30sp"
+    bold: True
+    background_normal: ''
+    background_color: 0, 0, 0, 0  # Transparent background
+    color: 0.46, 0.61, 0.29, 1  # #759C4A Green
+
+<CustomButton@Button>:
+    font_size: "30sp"
+    background_normal: ''
+    background_color: 0, 0, 0, 0  # Transparent background
+    color: 0.262, 0.262, 0.262, 1  # #434343
+    canvas.before:
+        Color:
+            rgba: 0.78, 0.85, 0.68, 1  # Background color (#C7D9AD)
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(10), ]  # Rounded corners
 
 <PlantHomeScreen>:
     FloatLayout:
         canvas.before:
             Color:
-                rgba: 1, 1, 1, 1  # White
+                rgba: 1, 1, 1, 1  # White background
             Rectangle:
                 pos: self.pos
                 size: self.size
 
-        # Title text at the top
+        # Title
         Label:
             text: app.title_text
-            font_size: "45sp"  # Font size
+            font_size: "45sp"
             color: 0.23, 0.23, 0.23, 1  # #3B3B3B
             halign: 'center'
             valign: 'top'
             padding_x: dp(30)
-            text_size: self.size  
+            text_size: self.size
             font_name: 'resources/fonts/nirmalab.ttf'
 
         Widget:
@@ -48,24 +66,23 @@
                     rgba: 0.46, 0.61, 0.29, 1  # #759C4A Green
                 Rectangle:
                     pos: (dp(200), dp(625)) 
-                    size: dp(965), dp(5)      # Full width of the title with a height of 5px
+                    size: dp(965), dp(5)
 
-        # Sidebar box layout
+        # Sidebar
         BoxLayout:
             orientation: 'vertical'
             size_hint: None, None
             width: dp(80)
             height: dp(666)
-            pos: (dp(33), dp(25))  # Adjust to position the bar
+            pos: (dp(33), dp(25))
             canvas.before:
                 Color:
-                    rgba: 0.78, 0.85, 0.68, 1   # #C7D9AD
+                    rgba: 0.78, 0.85, 0.68, 1  # #C7D9AD
                 RoundedRectangle:
                     pos: self.pos
                     size: self.size
-                    radius: [dp(10), ]  # Round corners
+                    radius: [dp(10), ]
 
-            # Sidebar buttons
             SidebarButton:
                 icon_source: 'resources/home.png'
                 on_release: app.root.current = "home"
@@ -85,71 +102,71 @@
             SidebarButton:
                 icon_source: 'resources/settings.png'
                 on_press: print("Not Implemented Yet!")
-        
+
+        # Main Content
         BoxLayout:
             orientation: 'vertical'
             size_hint: None, None
-            size: dp(965), dp(490)  # Adjust to fit the design
-            pos: (dp(200), dp(133)) 
-
+            size: dp(965), dp(490)
+            pos: (dp(200), dp(133))
             canvas.before:
                 Color:
                     rgba: 0.95, 0.95, 0.95, 0.5  # Slight grey
                 Rectangle:
                     pos: self.pos
                     size: self.size
-            
+
             BoxLayout:
                 size_hint_y: None
-                height: dp(60)  # Height of the header row
+                height: dp(60)
                 spacing: dp(10)
 
-                # Name button (header)
-                Button:
+                HeaderButton:
                     text: "Name"
-                    font_size: "30sp"
-                    bold: True
-                    background_normal: ''
-                    background_color: 0, 0, 0, 0
-                    color: 0.46, 0.61, 0.29, 1
-                    on_release: app.sort_by("name")  # Placeholder for sorting logic
+                    on_release: app.sort_by("name")
 
-                # Status button (header)
-                Button:
+                HeaderButton:
                     text: "Status"
-                    font_size: "30sp"
-                    bold: True
-                    background_normal: ''
-                    background_color: 0, 0, 0, 0
-                    color: 0.46, 0.61, 0.29, 1
                     on_release: app.sort_by("status")
 
-                # Location button (header)
-                Button:
+                HeaderButton:
                     text: "Location"
-                    font_size: "30sp"
-                    bold: True
-                    background_normal: ''
-                    background_color: 0, 0, 0, 0
-                    color: 0.46, 0.61, 0.29, 1
                     on_release: app.sort_by("location")
 
-                # Card button (header)
-                Button:
+                HeaderButton:
                     text: "Card"
-                    font_size: "30sp"
-                    bold: True
-                    background_normal: ''
-                    background_color: 0, 0, 0, 0
-                    color: 0.46, 0.61, 0.29, 1
                     on_release: app.sort_by("card")
 
             ScrollView:
-                size_hint_y: 1  # Take up the remaining space
+                size_hint_y: 1
                 do_scroll_x: False
                 canvas.before:
                     Color:
-                        rgba: 0.95, 0.95, 0.95, 1  # Slight grey for visibility
+                        rgba: 0.95, 0.95, 0.95, 1
                     Rectangle:
                         pos: self.pos
                         size: self.size
+
+                GridLayout:
+                    id: plant_list
+                    cols: 1
+                    size_hint_y: None
+                    height: self.minimum_height
+                    row_default_height: dp(60)
+                    spacing: dp(10)
+
+        # Action Buttons
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: None, None
+            size: dp(400), dp(50)
+            pos: (dp(500), dp(50))
+            spacing: dp(20)
+
+            CustomButton:
+                text: "Add"
+                on_release: print("Add feature later")
+
+            CustomButton:
+                text: "Remove"
+                on_release: print("Add feature later")

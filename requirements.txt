@@ -12,3 +12,4 @@ pypiwin32
 pywin32
 requests
 urllib3
+pandas

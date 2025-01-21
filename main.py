@@ -16,6 +16,8 @@ from kivy.uix.screenmanager import ScreenManager, NoTransition
 from screens.home_screen import HomeScreen
 from screens.plant_home import PlantHomeScreen
 
+#database
+from plant_database import add_plant, get_plant_list
 
 # Load KV files
 Builder.load_file('kv/greenhouse.kv')
@@ -59,6 +61,9 @@ class MyApp(App):
         self.plant_home_screen = PlantHomeScreen(name='PlantHome')
         self.sm.add_widget(self.plant_home_screen)
 
+        #Database initialization
+        self.load_plant_data()
+
         # Initialize environment simulation
         self.current_temperature = 75.0
         self.temperature_increasing = True
@@ -100,9 +105,6 @@ class MyApp(App):
         return self.home_screen.greenhouse_app
 
     # -------------- Simulation / Toggling Methods --------------
-    def sort_by(self, criteria):
-        print(f"Sorting by {criteria}")
-        # Add sorting logic here
 
     def toggle_fan_status(self):
         self.fan_status = not self.fan_status
@@ -202,6 +204,22 @@ class MyApp(App):
             return [1.0, 0.373, 0.082, 0.8]  # Orange
         else:
             return [0.812, 0.008, 0.008, 0.8]  # Red
+    
+    # -------------- Plant List UI / List Methods --------------
+    def sort_by(self, criteria):
+        print(f"Sorting by {criteria}")
+        # Add sorting logic here
+
+    def load_plant_data(self):
+        plant_list = get_plant_list()
+        print(plant_list)
+
+    def add_new_plant(self, name, status, location, card):
+        add_plant(name, status, location, card)
+        print(f"Plant '{name}' added successfully!")
+
+    #Todo add plant list to plant_home
+
 
 if __name__ == '__main__':
     MyApp().run()
