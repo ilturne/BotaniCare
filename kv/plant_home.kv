@@ -1,15 +1,155 @@
 #:kivy 2.3.0
 
+<SidebarButton@Button>:
+    background_normal: ''
+    background_color: 0, 0, 0, 0  # Transparent background
+    icon_source: '' 
+    selected: False
+
+    canvas.before:
+        # Highlight background if selected
+        Color:
+            rgba: (0.172, 0.251, 0.004, 0.55) if self.selected else (0, 0, 0, 0)  # Darker green if selected
+        RoundedRectangle:
+            pos: self.center_x - dp(30), self.center_y - dp(30)  # Adjust size & position
+            size: dp(60), dp(60)
+            radius: [dp(10), ]  # Rounded corners
+
+    Image:
+        source: root.icon_source
+        size_hint: (0.8, 0.8)
+        center_x: root.center_x
+        center_y: root.center_y
+
+
 <PlantHomeScreen>:
-    name: "PlantHome"
-    BoxLayout:
-        orientation: 'vertical'
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 1  # White
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        # Title text at the top
         Label:
-            text: "Welcome to Plant Home!"
-            font_size: "24sp"
-        Button:
-            text: "Back to Home"
+            text: app.title_text
+            font_size: "45sp"  # Font size
+            color: 0.23, 0.23, 0.23, 1  # #3B3B3B
+            halign: 'center'
+            valign: 'top'
+            padding_x: dp(30)
+            text_size: self.size  
+            font_name: 'resources/fonts/nirmalab.ttf'
+
+        Widget:
+            canvas:
+                Color:
+                    rgba: 0.46, 0.61, 0.29, 1  # #759C4A Green
+                Rectangle:
+                    pos: (dp(200), dp(625)) 
+                    size: dp(965), dp(5)      # Full width of the title with a height of 5px
+
+        # Sidebar box layout
+        BoxLayout:
+            orientation: 'vertical'
             size_hint: None, None
-            size: dp(150), dp(40)
-            on_release:
-                app.root.current = 'home'
+            width: dp(80)
+            height: dp(666)
+            pos: (dp(33), dp(25))  # Adjust to position the bar
+            canvas.before:
+                Color:
+                    rgba: 0.78, 0.85, 0.68, 1   # #C7D9AD
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(10), ]  # Round corners
+
+            # Sidebar buttons
+            SidebarButton:
+                icon_source: 'resources/home.png'
+                on_release: app.root.current = "home"
+
+            SidebarButton:
+                icon_source: 'resources/leaves.png'
+                selected: True 
+
+            SidebarButton:
+                icon_source: 'resources/analytics.png'
+                on_press: print("Not Implemented Yet!")
+
+            SidebarButton:
+                icon_source: 'resources/nature.png'
+                on_press: print("Not Implemented Yet!")
+
+            SidebarButton:
+                icon_source: 'resources/settings.png'
+                on_press: print("Not Implemented Yet!")
+        
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: None, None
+            size: dp(965), dp(490)  # Adjust to fit the design
+            pos: (dp(200), dp(133)) 
+
+            canvas.before:
+                Color:
+                    rgba: 0.95, 0.95, 0.95, 0.5  # Slight grey
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            
+            BoxLayout:
+                size_hint_y: None
+                height: dp(60)  # Height of the header row
+                spacing: dp(10)
+
+                # Name button (header)
+                Button:
+                    text: "Name"
+                    font_size: "30sp"
+                    bold: True
+                    background_normal: ''
+                    background_color: 0, 0, 0, 0
+                    color: 0.46, 0.61, 0.29, 1
+                    on_release: app.sort_by("name")  # Placeholder for sorting logic
+
+                # Status button (header)
+                Button:
+                    text: "Status"
+                    font_size: "30sp"
+                    bold: True
+                    background_normal: ''
+                    background_color: 0, 0, 0, 0
+                    color: 0.46, 0.61, 0.29, 1
+                    on_release: app.sort_by("status")
+
+                # Location button (header)
+                Button:
+                    text: "Location"
+                    font_size: "30sp"
+                    bold: True
+                    background_normal: ''
+                    background_color: 0, 0, 0, 0
+                    color: 0.46, 0.61, 0.29, 1
+                    on_release: app.sort_by("location")
+
+                # Card button (header)
+                Button:
+                    text: "Card"
+                    font_size: "30sp"
+                    bold: True
+                    background_normal: ''
+                    background_color: 0, 0, 0, 0
+                    color: 0.46, 0.61, 0.29, 1
+                    on_release: app.sort_by("card")
+
+            ScrollView:
+                size_hint_y: 1  # Take up the remaining space
+                do_scroll_x: False
+                canvas.before:
+                    Color:
+                        rgba: 0.95, 0.95, 0.95, 1  # Slight grey for visibility
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size

@@ -7,6 +7,7 @@ from kivy.app import App
 from kivy.lang import Builder
 from kivy.clock import Clock
 from kivy.properties import ListProperty
+from kivy.properties import StringProperty 
 import random
 
 from kivy.uix.screenmanager import ScreenManager, NoTransition
@@ -14,6 +15,7 @@ from kivy.uix.screenmanager import ScreenManager, NoTransition
 # Screens
 from screens.home_screen import HomeScreen
 from screens.plant_home import PlantHomeScreen
+
 
 # Load KV files
 Builder.load_file('kv/greenhouse.kv')
@@ -24,6 +26,7 @@ class MyApp(App):
     Main application class.
     Holds global data and logic (fan, lighting, pump statuses, etc.).
     """
+    title_text = StringProperty("Hello [name] you have 3/4 Healthy Species")  # Default text for Plant Home will probably need to be reorganized later
 
     DEFAULT_ON_COLOR = [0.3, 0.6, 0.3, 1.0]
     DEFAULT_OFF_COLOR = [0.812, 0.008, 0.008, 0.8]
@@ -41,9 +44,13 @@ class MyApp(App):
     LIGHT_LEVEL_THRESHOLDS = {"good": (200, 800), "warning": (100, 1000)}
 
     def build(self):
+
+        user_name = "Ilya"
+        healthy_species = 3
+        total_species = 4
         # ScreenManager setup
         self.sm = ScreenManager(transition=NoTransition())
-        
+
         # Create & add home screen
         self.home_screen = HomeScreen(name='home')
         self.sm.add_widget(self.home_screen)
@@ -72,10 +79,15 @@ class MyApp(App):
         self.home_screen.greenhouse_app.available_spots = 3
 
         # Schedule simulation updates
-        Clock.schedule_interval(self.simulate_temperature, 0.2)
-        Clock.schedule_interval(self.simulate_humidity, 0.2)
-        Clock.schedule_interval(self.simulate_light_level, 0.2)
-        Clock.schedule_interval(self.simulate_soil_moisture, 0.2)
+        Clock.schedule_interval(self.simulate_temperature, 1.0)
+        Clock.schedule_interval(self.simulate_humidity, 1.0)
+        Clock.schedule_interval(self.simulate_light_level, 1.0)
+        Clock.schedule_interval(self.simulate_soil_moisture, 1.0)
+
+        if user_name:
+            self.title_text = f"Hello {user_name} you have {healthy_species}/{total_species} Healthy Species"
+        else:
+            self.title_text = f"Hello you have {healthy_species}/{total_species} Healthy Species"
 
         # Start on the home screen
         self.sm.current = 'home'
@@ -88,6 +100,9 @@ class MyApp(App):
         return self.home_screen.greenhouse_app
 
     # -------------- Simulation / Toggling Methods --------------
+    def sort_by(self, criteria):
+        print(f"Sorting by {criteria}")
+        # Add sorting logic here
 
     def toggle_fan_status(self):
         self.fan_status = not self.fan_status
