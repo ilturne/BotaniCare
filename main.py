@@ -1,8 +1,8 @@
-# main.py
 from kivy.config import Config
 Config.set('graphics', 'width', '1280')
 Config.set('graphics', 'height', '720')
 
+import os
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.clock import Clock
@@ -25,9 +25,36 @@ class MyApp(App):
     Creates and manages screens, schedules data updates, etc.
     """
 
+    def load_user_plants(self):
+        import pandas as pd
+        user_csv = os.path.join("plantDatabase", "user_added_plants.csv")
+        if os.path.exists(user_csv):
+            df_user = pd.read_csv(user_csv)
+            self.user_added_plants = df_user.to_dict(orient='records')
+        else:
+            self.user_added_plants = []
+
+    def save_user_plants(self):
+        import pandas as pd
+        user_csv = os.path.join("plantDatabase", "user_added_plants.csv")
+        df_user = pd.DataFrame(self.user_added_plants)
+        df_user.to_csv(user_csv, index=False)
+
+    def add_user_plant(self, plant):
+        self.user_added_plants.append(plant)
+        self.save_user_plants()
+
+    def remove_user_plant(self, plant_id):
+        self.user_added_plants = [p for p in self.user_added_plants if p.get('id') != plant_id]
+        self.save_user_plants()
+
     def build(self):
         # Create the shared greenhouse data
         self.greenhouse_data = GreenhouseData()
+
+        # Initialize user-added plants storage and load existing data
+        self.user_added_plants = []
+        self.load_user_plants()
 
         # ScreenManager setup
         self.sm = ScreenManager(transition=NoTransition())
@@ -48,11 +75,7 @@ class MyApp(App):
         return self.sm
 
     def update_environment(self, dt):
-        """
-        Called every second to simulate environment changes
-        and update the home screen. This will be replaced with real data.
-        """
-        # Step 1: simulate environment in the data model
+        # ... existing environment simulation code ...
         self.greenhouse_data.simulate_temperature()
         self.greenhouse_data.simulate_humidity()
         self.greenhouse_data.simulate_light_level()

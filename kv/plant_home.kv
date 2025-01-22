@@ -40,6 +40,70 @@
             size: self.size
             radius: [dp(10), ]  # Rounded corners
 
+<PlantListItem>:
+    orientation: 'horizontal'
+    size_hint_y: None
+    height: dp(60)
+    padding: dp(10)
+    spacing: dp(0)
+
+    canvas.before:
+        Color:
+            rgba: 0.78, 0.85, 0.68, 1  # #C7D9AD color for the line
+        Line:
+            points: self.x, self.y, self.right, self.y  # Draw line at the bottom of the widget
+            width: dp(2)
+            
+    Label:
+        text: f"{root.plant_name} ({root.plant_count})"
+        font_size: "20sp"
+        color: 0.46, 0.61, 0.29, 1  # Green for Name
+        size_hint_x: None 
+        width: dp(260)  # Fixed width for Name box
+        halign: 'left'  # Align text to the left
+        valign: 'middle'  # Align text vertically in the middle
+        text_size: self.size  # Ensure text respects the label's size
+
+    Label:
+        text: root.plant_status
+        font_size: "20sp"
+        color: root.plant_status_color  # Dynamically set color
+        size_hint_x: None
+        width: dp(130)  # Fixed width for Name box
+        halign: 'center'
+        valign: 'middle'
+
+    Label:
+        text: root.plant_location
+        font_size: "20sp"
+        color: 0.46, 0.61, 0.29, 1  # Green for Location
+        size_hint_x: None
+        width: dp(320)
+        halign: 'center'
+        valign: 'middle'
+
+    Button:
+        background_normal: ''  # No default background
+        background_down: ''  # No background when pressed
+        background_color: 0, 0, 0, 0
+        size_hint: None, None
+        width: dp(80)  # Fixed width for the button
+        height: dp(60)  # Fixed height for the button
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}  # Center within the box
+        on_press: print(f"Details for {root.plant_name}")
+        padding: dp(10), dp(0), dp(0), dp(0)
+
+        Image:
+            source: 'resources/icons/card_button.png'  # Path to your icon
+            size_hint: None, None
+            size: dp(60), dp(60)  # Adjust the size of the icon
+            keep_ratio: True
+            allow_stretch: False
+            center_x: dp(790)
+            center_y: root.center_y
+
+        
+
 <PlantHomeScreen>:
     FloatLayout:
         canvas.before:
@@ -107,23 +171,30 @@
         BoxLayout:
             orientation: 'vertical'
             size_hint: None, None
-            size: dp(965), dp(490)
-            pos: (dp(200), dp(133))
-            canvas.before:
-                Color:
-                    rgba: 0.95, 0.95, 0.95, 0.5  # Slight grey
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
+            size: dp(900), dp(490)
+            pos: (dp(233), dp(133))
+            spacing: dp(10)
 
             BoxLayout:
                 size_hint_y: None
                 height: dp(60)
                 spacing: dp(10)
 
-                HeaderButton:
-                    text: "Name"
-                    on_release: root.sort_by("name") #Side note this sorting feature may have to be a app.sort_by I'm not sure if it will have to be in main or not
+                BoxLayout:
+                    orientation: 'horizontal'
+                    padding: dp(15), dp(0), dp(75), dp(0)
+                    Image:
+                        source: 'resources/icons/search-interface-symbol.png' 
+                        size_hint: None, None
+                        size: dp(40), dp(40)  
+                        allow_stretch: False
+                        keep_ratio: True
+                        pos_hint: {'center_y': 0.5}
+                        
+                    HeaderButton:
+                        text: "Name"
+                        on_release: root.sort_by("name")
+
 
                 HeaderButton:
                     text: "Status"
@@ -136,15 +207,27 @@
                 HeaderButton:
                     text: "Card"
                     on_release: root.sort_by("card")
+            
+            Widget:
+                size_hint_y: None
+                height: dp(2)
+                canvas.before:
+                    Color:
+                        rgba: 0.78, 0.85, 0.68, 1  # Color for #C7D9AD
+                    Rectangle:
+                        size: self.width, dp(4)
+                        pos: self.x, self.y - dp(2)
 
             RecycleView:
                 id: plant_rv
+                viewclass: 'PlantListItem'
                 RecycleBoxLayout:
-                    default_size: None, dp(60)
+                    default_size: None, dp(80)
+                    spacing: dp(20)
                     default_size_hint: 1, None
                     size_hint_y: None
                     height: self.minimum_height
-                    orientation: 'vertical'        
+                    orientation: 'vertical'          
 
         # Action Buttons
         BoxLayout:
