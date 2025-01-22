@@ -49,9 +49,9 @@
                 pos: self.pos
                 size: self.size
 
-        # Title
+        # Title - If you have "title_text" still on MyApp, you can leave this as is:
         Label:
-            text: app.title_text
+            text: app.greenhouse_data.title_text
             font_size: "45sp"
             color: 0.23, 0.23, 0.23, 1  # #3B3B3B
             halign: 'center'
@@ -84,23 +84,23 @@
                     radius: [dp(10), ]
 
             SidebarButton:
-                icon_source: 'resources/home.png'
+                icon_source: 'resources/icons/home.png'
                 on_release: app.root.current = "home"
 
             SidebarButton:
-                icon_source: 'resources/leaves.png'
+                icon_source: 'resources/icons/leaves.png'
                 selected: True 
 
             SidebarButton:
-                icon_source: 'resources/analytics.png'
+                icon_source: 'resources/icons/analytics.png'
                 on_press: print("Not Implemented Yet!")
 
             SidebarButton:
-                icon_source: 'resources/nature.png'
+                icon_source: 'resources/icons/nature.png'
                 on_press: print("Not Implemented Yet!")
 
             SidebarButton:
-                icon_source: 'resources/settings.png'
+                icon_source: 'resources/icons/settings.png'
                 on_press: print("Not Implemented Yet!")
 
         # Main Content
@@ -123,37 +123,28 @@
 
                 HeaderButton:
                     text: "Name"
-                    on_release: app.sort_by("name")
+                    on_release: root.sort_by("name") #Side note this sorting feature may have to be a app.sort_by I'm not sure if it will have to be in main or not
 
                 HeaderButton:
                     text: "Status"
-                    on_release: app.sort_by("status")
+                    on_release: root.sort_by("status")
 
                 HeaderButton:
                     text: "Location"
-                    on_release: app.sort_by("location")
+                    on_release: root.sort_by("location")
 
                 HeaderButton:
                     text: "Card"
-                    on_release: app.sort_by("card")
+                    on_release: root.sort_by("card")
 
-            ScrollView:
-                size_hint_y: 1
-                do_scroll_x: False
-                canvas.before:
-                    Color:
-                        rgba: 0.95, 0.95, 0.95, 1
-                    Rectangle:
-                        pos: self.pos
-                        size: self.size
-
-                GridLayout:
-                    id: plant_list
-                    cols: 1
+            RecycleView:
+                id: plant_rv
+                RecycleBoxLayout:
+                    default_size: None, dp(60)
+                    default_size_hint: 1, None
                     size_hint_y: None
                     height: self.minimum_height
-                    row_default_height: dp(60)
-                    spacing: dp(10)
+                    orientation: 'vertical'        
 
         # Action Buttons
         BoxLayout:
@@ -170,3 +161,4 @@
             CustomButton:
                 text: "Remove"
                 on_release: print("Add feature later")
+
