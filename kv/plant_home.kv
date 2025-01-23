@@ -2,43 +2,45 @@
 
 <SidebarButton@Button>:
     background_normal: ''
-    background_color: 0, 0, 0, 0  # Transparent background
+    background_color: 0, 0, 0, 0
     icon_source: ''
     selected: False
-
+    # Hover effect / "selected" state
     canvas.before:
         Color:
-            rgba: (0.172, 0.251, 0.004, 0.55) if self.selected else (0, 0, 0, 0)  # Darker green if selected
+            rgba: (0.172, 0.251, 0.004, 0.55) if self.selected else (0, 0, 0, 0)
         RoundedRectangle:
-            pos: self.center_x - dp(30), self.center_y - dp(30)  # Adjust size & position
+            pos: self.center_x - dp(30), self.center_y - dp(30)
             size: dp(60), dp(60)
-            radius: [dp(10), ]  # Rounded corners
-
+            radius: [dp(10), ]
     Image:
         source: root.icon_source
-        size_hint: (0.8, 0.8)
+        size_hint: 0.8, 0.8
         center_x: root.center_x
         center_y: root.center_y
+
 
 <HeaderButton@Button>:
     font_size: "30sp"
     bold: True
     background_normal: ''
-    background_color: 0, 0, 0, 0  # Transparent background
+    background_color: 0, 0, 0, 0
     color: 0.46, 0.61, 0.29, 1  # #759C4A Green
+
 
 <CustomButton@Button>:
     font_size: "30sp"
     background_normal: ''
-    background_color: 0, 0, 0, 0  # Transparent background
+    background_color: 0, 0, 0, 0
     color: 0.262, 0.262, 0.262, 1  # #434343
     canvas.before:
         Color:
-            rgba: 0.78, 0.85, 0.68, 1  # Background color (#C7D9AD)
+            rgba: 0.78, 0.85, 0.68, 1  # #C7D9AD
         RoundedRectangle:
             pos: self.pos
             size: self.size
-            radius: [dp(10), ]  # Rounded corners
+            radius: [dp(10), ]
+
 
 <PlantListItem>:
     orientation: 'horizontal'
@@ -46,74 +48,73 @@
     height: dp(60)
     padding: dp(10)
     spacing: dp(0)
-
     canvas.before:
         Color:
-            rgba: 0.78, 0.85, 0.68, 1  # #C7D9AD color for the line
+            rgba: 0.78, 0.85, 0.68, 1  # #C7D9AD
         Line:
-            points: self.x, self.y, self.right, self.y  # Draw line at the bottom of the widget
+            points: self.x, self.y, self.right, self.y
             width: dp(2)
-            
+
     Label:
         text: f"{root.plant_name} ({root.plant_count})"
         font_size: "20sp"
-        color: 0.46, 0.61, 0.29, 1  # Green for Name
-        size_hint_x: None 
-        width: dp(260)  # Fixed width for Name box
-        halign: 'left'  # Align text to the left
-        valign: 'middle'  # Align text vertically in the middle
-        text_size: self.size  # Ensure text respects the label's size
+        color: 0.46, 0.61, 0.29, 1  # #759C4A (Green)
+        size_hint_x: None
+        width: dp(260)
+        halign: 'left'
+        valign: 'middle'
+        text_size: self.size
 
     Label:
         text: root.plant_status
         font_size: "20sp"
-        color: root.plant_status_color  # Dynamically set color
+        color: root.plant_status_color
         size_hint_x: None
-        width: dp(130)  # Fixed width for Name box
+        width: dp(130)
         halign: 'center'
         valign: 'middle'
 
     Label:
         text: root.plant_location
         font_size: "20sp"
-        color: 0.46, 0.61, 0.29, 1  # Green for Location
+        color: 0.46, 0.61, 0.29, 1  # #759C4A (Green)
         size_hint_x: None
         width: dp(320)
         halign: 'center'
         valign: 'middle'
 
     Button:
-        background_normal: ''  # No default background
-        background_down: ''  # No background when pressed
+        background_normal: ''
+        background_down: ''
         background_color: 0, 0, 0, 0
         size_hint: None, None
-        width: dp(80)  # Fixed width for the button
-        height: dp(60)  # Fixed height for the button
-        pos_hint: {'center_x': 0.5, 'center_y': 0.5}  # Center within the box
+        width: dp(80)
+        height: dp(60)
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
         on_press: print(f"Details for {root.plant_name}")
-        padding: dp(10), dp(0), dp(0), dp(0)
+        padding: dp(10), 0, 0, 0
 
         Image:
-            source: 'resources/icons/card_button.png'  # Path to your icon
+            source: 'resources/icons/card_button.png'
             size_hint: None, None
-            size: dp(60), dp(60)  # Adjust the size of the icon
+            size: dp(60), dp(60)
             keep_ratio: True
             allow_stretch: False
             center_x: dp(790)
             center_y: root.center_y
 
-        
 
 <PlantHomeScreen>:
     FloatLayout:
+        # Background
         canvas.before:
             Color:
-                rgba: 1, 1, 1, 1  # White background
+                rgba: 1, 1, 1, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
 
-        # Title - If you have "title_text" still on MyApp, you can leave this as is:
+        # Title at the top
         Label:
             text: app.greenhouse_data.title_text
             font_size: "45sp"
@@ -129,10 +130,10 @@
                 Color:
                     rgba: 0.46, 0.61, 0.29, 1  # #759C4A Green
                 Rectangle:
-                    pos: (dp(200), dp(625)) 
+                    pos: (dp(200), dp(625))
                     size: dp(965), dp(5)
 
-        # Sidebar
+        # Sidebar (Home, Leaves, Analytics, etc.)
         BoxLayout:
             orientation: 'vertical'
             size_hint: None, None
@@ -153,7 +154,7 @@
 
             SidebarButton:
                 icon_source: 'resources/icons/leaves.png'
-                selected: True 
+                selected: True
 
             SidebarButton:
                 icon_source: 'resources/icons/analytics.png'
@@ -167,7 +168,7 @@
                 icon_source: 'resources/icons/settings.png'
                 on_press: print("Not Implemented Yet!")
 
-        # Main Content
+        # Main content area
         BoxLayout:
             orientation: 'vertical'
             size_hint: None, None
@@ -175,6 +176,7 @@
             pos: (dp(233), dp(133))
             spacing: dp(10)
 
+            # Top bar (search icon + sorting)
             BoxLayout:
                 size_hint_y: None
                 height: dp(60)
@@ -182,19 +184,19 @@
 
                 BoxLayout:
                     orientation: 'horizontal'
-                    padding: dp(15), dp(0), dp(75), dp(0)
+                    padding: dp(15), 0, dp(75), 0
+
                     Image:
-                        source: 'resources/icons/search-interface-symbol.png' 
+                        source: 'resources/icons/search-interface-symbol.png'
                         size_hint: None, None
-                        size: dp(40), dp(40)  
+                        size: dp(40), dp(40)
                         allow_stretch: False
                         keep_ratio: True
                         pos_hint: {'center_y': 0.5}
-                        
+
                     HeaderButton:
                         text: "Name"
                         on_release: root.sort_by("name")
-
 
                 HeaderButton:
                     text: "Status"
@@ -207,17 +209,19 @@
                 HeaderButton:
                     text: "Card"
                     on_release: root.sort_by("card")
-            
+
+            # A thin horizontal separator line
             Widget:
                 size_hint_y: None
                 height: dp(2)
                 canvas.before:
                     Color:
-                        rgba: 0.78, 0.85, 0.68, 1  # Color for #C7D9AD
+                        rgba: 0.78, 0.85, 0.68, 1  # #C7D9AD
                     Rectangle:
                         size: self.width, dp(4)
                         pos: self.x, self.y - dp(2)
 
+            # RecycleView for plant list
             RecycleView:
                 id: plant_rv
                 viewclass: 'PlantListItem'
@@ -227,9 +231,9 @@
                     default_size_hint: 1, None
                     size_hint_y: None
                     height: self.minimum_height
-                    orientation: 'vertical'          
+                    orientation: 'vertical'
 
-        # Action Buttons
+        # Bottom action buttons
         BoxLayout:
             orientation: 'horizontal'
             size_hint: None, None
@@ -239,9 +243,8 @@
 
             CustomButton:
                 text: "Add"
-                on_release: print("Add feature later")
+                on_release: root.open_add_popup()
 
             CustomButton:
                 text: "Remove"
                 on_release: print("Add feature later")
-

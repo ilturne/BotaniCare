@@ -10,20 +10,19 @@ base_list_url = "https://perenual.com/api/species-list"
 base_detail_url = "https://perenual.com/api/species/details"
 
 plant_list = [
-    "Spider Plant", "Snake Plant", "Peace Lily", "Pothos", "Philodendron",
-    "Fiddle Leaf Fig", "ZZ Plant", "Boston Fern", "Aloe Vera", "Jade Plant",
-    "Dracaena", "Monstera Deliciosa", "Rubber Plant", "Succulents", "Cacti",
-    "African Violet", "Orchid", "Begonia", "Calathea", "Anthurium",
-    "Prayer Plant", "Chinese Money Plant", "English Ivy", "Maidenhair Fern",
-    "Basil", "Mint", "Rosemary", "Thyme", "Oregano", "Sage", "Parsley",
-    "Chives", "Tomato", "Bell Pepper", "Cucumbers", "Lettuce", "Spinach",
-    "Strawberries", "Geraniums", "Petunias", "Marigolds", "Impatiens",
-    "Pansies", "Florist Begonia", "Azalea", "Hydrangea", "Lilies",
-    "Sunflowers", "Zinnias", "Gardenias"
+    "Carrot", "Potato", "Onion", "Garlic", "Sweet Potato", "Radish", "Beetroot",
+    "Turnip", "Parsnip", "Celery", "Leek", "Shallot", "Brussels Sprouts",
+    "Cauliflower", "Broccoli", "Cabbage", "Kale", "Swiss Chard", "Collard Greens",
+    "Pumpkin", "Zucchini", "Yellow Squash", "Butternut Squash", "Acorn Squash",
+    "Eggplant", "Okra", "Green Beans", "Snow Peas", "Snap Peas", "Peas",
+    "Corn", "Mushrooms", "Bell Peppers", "Jalapenos", "Chili Peppers",
+    "Cantaloupe", "Watermelon", "Honeydew Melon", "Pineapple", "Mango",
+    "Banana", "Blueberries", "Raspberries", "Blackberries", "Peaches",
+    "Plums", "Cherries", "Apples", "Pears", "Grapes", "Limes"
 ]
 
 # Path to the CSV file where detailed plant data is stored
-csv_path = os.path.join("plantDatabase", "detailed_plants_data.csv")
+csv_path = os.path.join("plantDatabase", "detailed_plants_new_data.csv")
 
 # Ensure the plantDatabase folder exists
 os.makedirs("plantDatabase", exist_ok=True)
