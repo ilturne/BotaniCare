@@ -41,7 +41,88 @@
             size: self.size
             radius: [dp(10), ]
 
+<AddPlantPopup@Popup>:
+    title: ""
+    size_hint: 0.9, 0.9
+    background_color: 1, 1, 1, 0.9
+    background: ''  # If you want a transparent or custom background
+    separator_height: 0  # Hide the default popup title bar
 
+    # Main layout
+    FloatLayout:
+        # Close (X) Button at top-left
+        Button:
+            text: "X"
+            size_hint: None, None
+            size: dp(60), dp(40)
+            pos: dp(10), root.height - dp(50)
+            background_normal: ''
+            background_color: 0.3, 0.3, 0.3, 1
+            color: 1, 1, 1, 1
+            on_release: root.dismiss()
+
+        Label:
+            text: "Search"
+            font_size: "36sp"
+            size_hint: None, None
+            size: dp(150), dp(40)
+            pos_hint: {'center_x': 0.5, 'top': 0.95}
+            halign: 'center'
+            valign: 'middle'
+            text_size: self.size
+            color: 0.2, 0.2, 0.2, 1
+
+        # Search bar
+        TextInput:
+            id: search_input
+            size_hint: 0.6, None
+            height: dp(40)
+            pos_hint: {'center_x': 0.5, 'top': 0.82}
+            multiline: False
+            hint_text: "Type to search..."
+            on_text_validate: root.perform_search(self.text)
+
+        # A RecycleView or scroll view to display plants
+        RecycleView:
+            id: available_plants_rv
+            size_hint: 0.9, 0.5
+            pos_hint: {'center_x': 0.5, 'center_y': 0.4}
+            viewclass: 'PlantGridItem'  # We'll define a custom widget
+            RecycleGridLayout:
+                cols: 4
+                row_default_height: dp(100)
+                row_force_default: True
+                col_default_width: dp(175)
+                col_force_default: False
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(10)
+                padding: dp(10)
+                orientation: 'lr-tb'
+
+# Example item in the grid
+<PlantGridItem@BoxLayout>:
+    display_name: ""
+    display_species: ""
+
+    orientation: 'vertical'
+    Image:
+        source: "resources/icons/plant_icon.png"
+        size_hint: None, None
+        size: dp(60), dp(60)
+        pos_hint: {'center_x': 0.5}
+    
+    Label:
+        text: root.display_name
+        font_size: "14sp"
+        halign: 'center'
+        color: 0.2, 0.2, 0.2, 1
+    Label:
+        text: root.display_species
+        font_size: "12sp"
+        halign: 'center'
+        color: 0.3, 0.7, 0.3, 1  # greenish
+        
 <PlantListItem>:
     orientation: 'horizontal'
     size_hint_y: None

@@ -10,15 +10,7 @@ base_list_url = "https://perenual.com/api/species-list"
 base_detail_url = "https://perenual.com/api/species/details"
 
 plant_list = [
-    "Carrot", "Potato", "Onion", "Garlic", "Sweet Potato", "Radish", "Beetroot",
-    "Turnip", "Parsnip", "Celery", "Leek", "Shallot", "Brussels Sprouts",
-    "Cauliflower", "Broccoli", "Cabbage", "Kale", "Swiss Chard", "Collard Greens",
-    "Pumpkin", "Zucchini", "Yellow Squash", "Butternut Squash", "Acorn Squash",
-    "Eggplant", "Okra", "Green Beans", "Snow Peas", "Snap Peas", "Peas",
-    "Corn", "Mushrooms", "Bell Peppers", "Jalapenos", "Chili Peppers",
-    "Cantaloupe", "Watermelon", "Honeydew Melon", "Pineapple", "Mango",
-    "Banana", "Blueberries", "Raspberries", "Blackberries", "Peaches",
-    "Plums", "Cherries", "Apples", "Pears", "Grapes", "Limes"
+    #Add plants here
 ]
 
 # Path to the CSV file where detailed plant data is stored
@@ -28,12 +20,7 @@ csv_path = os.path.join("plantDatabase", "detailed_plants_new_data.csv")
 os.makedirs("plantDatabase", exist_ok=True)
 
 # Load existing plant data if available
-if os.path.exists(csv_path):
-    df_existing = pd.read_csv(csv_path)
-    # Convert existing dataframe to list of dictionaries for easier searching
-    existing_details = df_existing.to_dict(orient='records')
-else:
-    existing_details = []
+existing_details = []
 
 # Create a dictionary for quick lookup by common name from existing data
 existing_by_name = {}
