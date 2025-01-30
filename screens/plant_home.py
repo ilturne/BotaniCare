@@ -1,10 +1,7 @@
+import json
 from kivy.uix.screenmanager import Screen
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.popup import Popup
-from kivy.uix.label import Label
-from kivy.uix.button import Button
 from kivy.properties import StringProperty, ListProperty, NumericProperty
-from kivy.app import App
 from kivy.factory import Factory
 
 class PlantListItem(BoxLayout):
@@ -72,26 +69,54 @@ class PlantHomeScreen(Screen):
         # Sorting logic if needed
 
     def open_add_popup(self):
+        """
+        Opens a popup that shows the 'public' plant_database from greenhouse_data.
+        We parse the JSON in 'default_image' field to get the 'original_url' for each plant.
+        """
         add_popup = Factory.AddPlantPopup()
         rv = add_popup.ids.available_plants_rv
 
         # Use greenhouse_data.plant_database to list all plants
         full_db = self.greenhouse_data.plant_database
 
-        rv.data = [{
-        'display_name': plant.get('common_name', 'Name'),
-        'display_species': plant.get('type', 'Species')
-    } for plant in full_db]
+        # Build RecycleView data
+        rv.data = []
+        for plant in full_db:
+            raw_image = plant.get('default_image', '{}')
+            plant_image_url = self.parse_plant_image(raw_image)
 
+            entry_dict = {
+                'display_name': plant.get('common_name', 'Name'),
+                'display_species': plant.get('type', 'Species'),
+                'plant_image': plant_image_url
+            }
+            rv.data.append(entry_dict)
+
+        # Create a search callback
         def perform_search(search_text):
-            filtered = []
+            filtered_data = []
             for plant in full_db:
-                if search_text.lower() in plant['common_name'].lower():
-                    filtered.append(plant)
-            rv.data = [{
-                'display_name': p.get('common_name', 'Name'),
-                'display_species': p.get('species', 'Species'),
-            } for p in filtered]
+                if search_text.lower() in plant.get('common_name', '').lower():
+                    raw_image = plant.get('default_image', '{}')
+                    plant_image_url = self.parse_plant_image(raw_image)
+                    filtered_data.append({
+                        'display_name': plant.get('common_name', 'Name'),
+                        'display_species': plant.get('type', 'Species'),
+                        'plant_image': plant_image_url
+                    })
+            rv.data = filtered_data
 
+        # Assign that function to the popup instance so KV can call popup.perform_search
         add_popup.perform_search = perform_search
         add_popup.open()
+
+    def parse_plant_image(self, raw_json_str):
+        try:
+            data = json.loads(raw_json_str)
+            print("Parsed default_image:", data)
+            print("Extracted original_url =", data.get('original_url'))
+            return data.get('original_url', 'resources/icons/plant_icon.png')
+        except (json.JSONDecodeError, TypeError):
+            return 'resources/icons/plant_icon.png'
+
+

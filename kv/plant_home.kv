@@ -43,85 +43,103 @@
 
 <AddPlantPopup@Popup>:
     title: ""
-    size_hint: 0.9, 0.9
-    background_color: 1, 1, 1, 0.9
+    size_hint: 0.85, 0.9
+    background_color: 1, 1, 1, 0.95
     background: ''  # If you want a transparent or custom background
     separator_height: 0  # Hide the default popup title bar
 
-    # Main layout
     FloatLayout:
-        # Close (X) Button at top-left
         Button:
-            text: "X"
-            size_hint: None, None
-            size: dp(60), dp(40)
-            pos: dp(10), root.height - dp(50)
             background_normal: ''
-            background_color: 0.3, 0.3, 0.3, 1
-            color: 1, 1, 1, 1
-            on_release: root.dismiss()
-
-        Label:
-            text: "Search"
-            font_size: "36sp"
+            background_down: ''
+            background_color: 0, 0, 0, 0
             size_hint: None, None
-            size: dp(150), dp(40)
-            pos_hint: {'center_x': 0.5, 'top': 0.95}
-            halign: 'center'
-            valign: 'middle'
-            text_size: self.size
-            color: 0.2, 0.2, 0.2, 1
+            width: dp(50)
+            height: dp(50)
+            pos: root.x + dp(10), root.top - dp(60) 
+            on_press: root.dismiss()
+            padding: dp(10), 0, 0, 0    
+            Image:
+                source: 'resources/icons/cross.png'
+                size_hint: None, None
+                size: dp(60), dp(60)
+                keep_ratio: True
+                allow_stretch: False
+                pos: root.x, root.top - dp(60) 
 
-        # Search bar
         TextInput:
             id: search_input
-            size_hint: 0.6, None
-            height: dp(40)
-            pos_hint: {'center_x': 0.5, 'top': 0.82}
+            size_hint: 0.7, None
+            height: dp(60)
+            pos_hint: {'center_x': 0.5, 'top': 1.0}
             multiline: False
-            hint_text: "Type to search..."
+            font_size: dp(36)
+            background_normal: ''
+            background_active: ''
+            foreground_color: 0, 0, 0, 1
+            hint_text: "Search"
+            hint_text_color: 0.5, 0.5, 0.5, 1
             on_text_validate: root.perform_search(self.text)
 
         # A RecycleView or scroll view to display plants
         RecycleView:
             id: available_plants_rv
-            size_hint: 0.9, 0.5
-            pos_hint: {'center_x': 0.5, 'center_y': 0.4}
+            size_hint: 0.8, 0.8
+            pos_hint: {'center_x': 0.5, 'center_y': 0.45}
             viewclass: 'PlantGridItem'  # We'll define a custom widget
             RecycleGridLayout:
                 cols: 4
-                row_default_height: dp(100)
+                row_default_height: dp(225)
                 row_force_default: True
                 col_default_width: dp(175)
                 col_force_default: False
                 size_hint_y: None
                 height: self.minimum_height
-                spacing: dp(10)
-                padding: dp(10)
+                spacing: dp(25)
+                padding: [dp(35), 0, 0, 0]  # Add padding to the left to shift the grid to the right
                 orientation: 'lr-tb'
 
-# Example item in the grid
-<PlantGridItem@BoxLayout>:
+<PlantGridItem@FloatLayout>:
     display_name: ""
     display_species: ""
-
     orientation: 'vertical'
+
+    canvas.before:
+        Color:
+            rgba: 0.9, 0.9, 0.9, 1
+        Rectangle:
+            pos: self.pos
+            size: dp(175), dp(225)
+
+    Button:
+        background_normal: ''
+        background_down: ''
+        size_hint: None, None
+        size: dp(175), dp(225)
+        center_x: root.center_x + dp(37)
+        center_y: root.center_y + dp(63)
+        on_press: print("Overlay pressed!")
+        opacity: 0 
+
     Image:
         source: "resources/icons/plant_icon.png"
         size_hint: None, None
-        size: dp(60), dp(60)
-        pos_hint: {'center_x': 0.5}
+        size: dp(100), dp(100)
+        center_x: root.center_x + dp(40)
+        center_y: root.center_y + dp(120)
     
     Label:
         text: root.display_name
-        font_size: "14sp"
-        halign: 'center'
+        font_size: "25sp"
+        center_x: root.center_x + dp(40)
+        center_y: root.center_y + dp(20)
         color: 0.2, 0.2, 0.2, 1
     Label:
         text: root.display_species
-        font_size: "12sp"
-        halign: 'center'
+        font_size: "20sp"
         color: 0.3, 0.7, 0.3, 1  # greenish
+        center_x: root.center_x + dp(40)
+        center_y: root.center_y - dp(10)
         
 <PlantListItem>:
     orientation: 'horizontal'
