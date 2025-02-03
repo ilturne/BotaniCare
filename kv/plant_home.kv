@@ -41,16 +41,115 @@
             size: self.size
             radius: [dp(10), ]
 
+<AddPlantPopup>:
+    title: ""
+    size_hint: 0.85, 0.9
+    background_color: 1, 1, 1, 0.95
+    background: ''
+    separator_height: 0
+    FloatLayout:
+        Button:
+            background_normal: ''
+            background_down: ''
+            background_color: 0, 0, 0, 0
+            size_hint: None, None
+            width: dp(50)
+            height: dp(50)
+            pos: root.x + dp(10), root.top - dp(60)
+            on_press: root.dismiss()
+            padding: dp(10), 0, 0, 0    
+            Image:
+                source: 'resources/icons/cross.png'
+                size_hint: None, None
+                size: dp(60), dp(60)
+                keep_ratio: True
+                allow_stretch: False
+                pos: root.x, root.top - dp(60)
 
+        TextInput:
+            id: search_input
+            size_hint: 0.7, None
+            height: dp(60)
+            pos_hint: {'center_x': 0.5, 'top': 1.0}
+            multiline: False
+            font_size: dp(36)
+            background_normal: ''
+            background_active: ''
+            foreground_color: 0, 0, 0, 1
+            hint_text: "Search"
+            hint_text_color: 0.5, 0.5, 0.5, 1
+            on_text_validate: root.perform_search(self.text)
+
+        RecycleView:
+            id: available_plants_rv
+            size_hint: 0.8, 0.8
+            pos_hint: {'center_x': 0.5, 'center_y': 0.45}
+            viewclass: 'PlantGridItemWidget'
+            RecycleGridLayout:
+                cols: 4
+                row_default_height: dp(225)
+                row_force_default: True
+                col_default_width: dp(175)
+                col_force_default: False
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(25)
+                padding: [dp(35), 0, 0, 0]
+                orientation: 'lr-tb'
+
+
+<PlantGridItemWidget>:
+    display_name: ""
+    display_species: ""
+    popup_ref: None  # This will be set when creating the data for the RecycleView
+    canvas.before:
+        Color:
+            rgba: 0.9, 0.9, 0.9, 1
+        Rectangle:
+            pos: self.pos
+            size: dp(175), dp(225)
+
+    Button:
+        background_normal: ''
+        background_down: ''
+        size_hint: None, None
+        size: dp(175), dp(225)
+        center_x: root.center_x + dp(37)
+        center_y: root.center_y + dp(63)
+        on_press: root.on_select()  # call the new on_select method
+        opacity: 0 
+
+    Image:
+        source: 'resources/icons/plant_icon.png'
+        size_hint: None, None
+        size: dp(100), dp(100)
+        center_x: root.center_x + dp(40)
+        center_y: root.center_y + dp(120)
+    
+    Label:
+        text: root.display_name
+        font_size: "25sp"
+        center_x: root.center_x + dp(40)
+        center_y: root.center_y + dp(20)
+        color: 0.2, 0.2, 0.2, 1
+
+    Label:
+        text: root.display_species
+        font_size: "20sp"
+        color: 0.3, 0.7, 0.3, 1
+        center_x: root.center_x + dp(40)
+        center_y: root.center_y - dp(10)
+        
 <PlantListItem>:
     orientation: 'horizontal'
     size_hint_y: None
     height: dp(60)
     padding: dp(10)
     spacing: dp(0)
+    plant_id: ""
     canvas.before:
         Color:
-            rgba: 0.78, 0.85, 0.68, 1  # #C7D9AD
+            rgba: 0.78, 0.85, 0.68, 1
         Line:
             points: self.x, self.y, self.right, self.y
             width: dp(2)
@@ -58,7 +157,7 @@
     Label:
         text: f"{root.plant_name} ({root.plant_count})"
         font_size: "20sp"
-        color: 0.46, 0.61, 0.29, 1  # #759C4A (Green)
+        color: 0.46, 0.61, 0.29, 1
         size_hint_x: None
         width: dp(260)
         halign: 'left'
@@ -77,7 +176,7 @@
     Label:
         text: root.plant_location
         font_size: "20sp"
-        color: 0.46, 0.61, 0.29, 1  # #759C4A (Green)
+        color: 0.46, 0.61, 0.29, 1
         size_hint_x: None
         width: dp(320)
         halign: 'center'
@@ -91,17 +190,18 @@
         width: dp(80)
         height: dp(60)
         pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-        on_press: print(f"Details for {root.plant_name}")
         padding: dp(10), 0, 0, 0
-
+        on_release: root.handle_action()
         Image:
-            source: 'resources/icons/card_button.png'
+            # Bind directly to the local remove_mode property.
+            source: 'resources/icons/cross.png' if root.remove_mode else 'resources/icons/card_button.png'
             size_hint: None, None
             size: dp(60), dp(60)
             keep_ratio: True
             allow_stretch: False
             center_x: dp(790)
-            center_y: root.center_y
+            center_y: self.parent.center_y
+
 
 
 <PlantHomeScreen>:
@@ -247,4 +347,6 @@
 
             CustomButton:
                 text: "Remove"
-                on_release: print("Add feature later")
+                on_release:
+                    root.remove_mode = not root.remove_mode
+                    root.update_plant_list()

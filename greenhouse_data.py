@@ -1,40 +1,45 @@
 # greenhouse_data.py
 import random
+import os
+import csv
 from kivy.event import EventDispatcher
-from kivy.properties import BooleanProperty, ListProperty, NumericProperty
+from kivy.properties import BooleanProperty, ListProperty, NumericProperty, StringProperty
+import pandas as pd
 
 class GreenhouseData(EventDispatcher):
     """
-    Holds all greenhouse data/state, now as Kivy properties so UI updates automatically.
+    Shared data class.
+    Holds environment variables, the public plant database, and user-added plants.
     """
-
-    # Default colors
+    # Default toggle colors
     DEFAULT_ON_COLOR = [0.3, 0.6, 0.3, 1.0]
     DEFAULT_OFF_COLOR = [0.812, 0.008, 0.008, 0.8]
 
-    # Boolean properties for fan, lighting, and water pump
+    # Toggle properties
     fan_status = BooleanProperty(False)
     lighting_status = BooleanProperty(False)
     water_pump_status = BooleanProperty(False)
-
-    # Corresponding color properties
     fan_status_color = ListProperty(DEFAULT_OFF_COLOR)
     lighting_status_color = ListProperty(DEFAULT_OFF_COLOR)
     water_pump_status_color = ListProperty(DEFAULT_OFF_COLOR)
 
-    # Environment variables (for example, numeric properties):
+    # Environment variables
     current_temperature = NumericProperty(75.0)
     current_humidity = NumericProperty(0.5)
     current_light_level = NumericProperty(300.0)
     current_soil_moisture = NumericProperty(0.3)
-
-    # Some internal flags to simulate up/down cycles
+    # Simulation flags
     temperature_increasing = True
     humidity_increasing = True
     light_level_increasing = True
     soil_moisture_increasing = True
 
-    # Thresholds (still normal dicts, used for ring color logic if needed)
+    # Species properties (reactive)
+    healthy_species = NumericProperty(0)
+    total_species = NumericProperty(0)
+    title_text = StringProperty("")
+
+    # Thresholds
     TEMPERATURE_THRESHOLDS = {"good": (64, 75), "warning": (50, 85)}
     HUMIDITY_THRESHOLDS = {"good": (0.5, 0.7), "warning": (0.4, 0.8)}
     SOIL_MOISTURE_THRESHOLDS = {"good": (0.2, 0.4), "warning": (0.1, 0.5)}
@@ -42,33 +47,108 @@ class GreenhouseData(EventDispatcher):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        # Initialize any additional logic you want here
-        # ------------------ Plant Home Data ------------------
+        # Initialize user data and title text
         self.user_name = "Ilya"
         self.healthy_species = 0
         self.total_species = 0
+        self._update_title_text()
+
+        # Load the public and user-added plant databases
+        self.plant_database = []
+        self.load_plant_database()
+        self.user_added_plants = []
+        self.load_user_plants()
+
+    def _update_title_text(self):
+        # Update the reactive title_text property.
         self.title_text = f"Hello {self.user_name} you have {self.healthy_species}/{self.total_species} Healthy Species"
 
-    # ------------------ Toggling Methods ------------------
+    def load_plant_database(self):
+        """Load the public plant database from CSV."""
+        csv_path = os.path.join("plantDatabase", "detailed_plants_data.csv")
+        if not os.path.exists(csv_path):
+            print(f"Warning: CSV not found at {csv_path}")
+            return
+        with open(csv_path, "r", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            self.plant_database = list(reader)
+        print(f"Loaded {len(self.plant_database)} entries from {csv_path}")
+
+    def load_user_plants(self):
+        """Load the user-added plants from CSV."""
+        user_csv = os.path.join("plantDatabase", "user_added_plants.csv")
+        if os.path.exists(user_csv):
+            df_user = pd.read_csv(user_csv)
+            self.user_added_plants = df_user.to_dict(orient='records')
+            # Assume all loaded plants are healthy.
+            self.total_species = len(self.user_added_plants)
+            self.healthy_species = len(self.user_added_plants)
+            print(f"Loaded {len(self.user_added_plants)} user-added plants from {user_csv}")
+        else:
+            self.user_added_plants = []
+            print(f"No user-added plants CSV found at {user_csv}. Starting empty.")
+        self._update_title_text()
+
+    def save_user_plants(self):
+        """Save user-added plants to CSV (preserving headers if empty)."""
+        user_csv = os.path.join("plantDatabase", "user_added_plants.csv")
+        headers = [
+            "id", "common_name", "scientific_name", "other_name", "family", "origin", "type",
+            "dimension", "dimensions", "cycle", "attracts", "propagation", "hardiness",
+            "hardiness_location", "watering", "depth_water_requirement", "volume_water_requirement",
+            "watering_period", "watering_general_benchmark", "plant_anatomy", "sunlight",
+            "pruning_month", "pruning_count", "seeds", "maintenance", "care-guides", "soil",
+            "growth_rate", "drought_tolerant", "salt_tolerant", "thorny", "invasive", "tropical",
+            "indoor", "care_level", "pest_susceptibility", "pest_susceptibility_api", "flowers",
+            "flowering_season", "flower_color", "cones", "fruits", "edible_fruit",
+            "edible_fruit_taste_profile", "fruit_nutritional_value", "fruit_color", "harvest_season",
+            "leaf", "leaf_color", "edible_leaf", "cuisine", "medicinal", "poisonous_to_humans",
+            "poisonous_to_pets", "description", "default_image", "other_images", "search_term"
+        ]
+        if not self.user_added_plants:
+            df_user = pd.DataFrame(columns=headers)
+        else:
+            df_user = pd.DataFrame(self.user_added_plants)
+        df_user.to_csv(user_csv, index=False)
+        print(f"Saved {len(self.user_added_plants)} user-added plants to {user_csv}.")
+
+    def add_user_plant(self, plant):
+        """
+        Adds a new plant (assumed healthy), updates counts & title, and saves.
+        """
+        self.user_added_plants.append(plant)
+        self.healthy_species += 1
+        self.total_species += 1
+        self._update_title_text()
+        self.save_user_plants()
+
+    def remove_user_plant(self, plant_id):
+        """
+        Removes plant(s) by id, updates counts & title, and saves.
+        """
+        before_count = len(self.user_added_plants)
+        self.user_added_plants = [p for p in self.user_added_plants if p.get('id') != plant_id]
+        removed_count = before_count - len(self.user_added_plants)
+        print(f"Removed {removed_count} user plants with ID={plant_id}.")
+        if removed_count > 0:
+            self.healthy_species = max(0, self.healthy_species - removed_count)
+            self.total_species = max(0, self.total_species - removed_count)
+        self._update_title_text()
+        self.save_user_plants()
+
+    # Toggle & simulation methods below...
     def toggle_fan_status(self):
         self.fan_status = not self.fan_status
-        self.fan_status_color = (self.DEFAULT_ON_COLOR
-                                 if self.fan_status
-                                 else self.DEFAULT_OFF_COLOR)
+        self.fan_status_color = self.DEFAULT_ON_COLOR if self.fan_status else self.DEFAULT_OFF_COLOR
 
     def toggle_lighting_status(self):
         self.lighting_status = not self.lighting_status
-        self.lighting_status_color = (self.DEFAULT_ON_COLOR
-                                      if self.lighting_status
-                                      else self.DEFAULT_OFF_COLOR)
+        self.lighting_status_color = self.DEFAULT_ON_COLOR if self.lighting_status else self.DEFAULT_OFF_COLOR
 
     def toggle_water_pump_status(self):
         self.water_pump_status = not self.water_pump_status
-        self.water_pump_status_color = (self.DEFAULT_ON_COLOR
-                                        if self.water_pump_status
-                                        else self.DEFAULT_OFF_COLOR)
+        self.water_pump_status_color = self.DEFAULT_ON_COLOR if self.water_pump_status else self.DEFAULT_OFF_COLOR
 
-    # -------------- Simulation Methods --------------
     def simulate_temperature(self):
         step = 0.1
         if self.temperature_increasing:
@@ -81,7 +161,6 @@ class GreenhouseData(EventDispatcher):
                 self.temperature_increasing = True
 
     def simulate_humidity(self):
-        # For demonstration
         self.current_humidity = random.uniform(0.40, 0.90)
 
     def simulate_light_level(self):
@@ -106,14 +185,12 @@ class GreenhouseData(EventDispatcher):
             if self.current_soil_moisture <= 0.20:
                 self.soil_moisture_increasing = True
 
-    # (Optional) If you still want to evaluate ring color for your "cards",
-    # keep the logic here:
     def evaluate_ring_color(self, value, thresholds):
         good_min, good_max = thresholds["good"]
         warn_min, warn_max = thresholds["warning"]
         if good_min <= value <= good_max:
-            return [0.3, 0.6, 0.3, 0.8]  # Green
+            return [0.3, 0.6, 0.3, 0.8]
         elif warn_min <= value <= warn_max:
-            return [1.0, 0.373, 0.082, 0.8]  # Orange
+            return [1.0, 0.373, 0.082, 0.8]
         else:
-            return [0.812, 0.008, 0.008, 0.8]  # Red
+            return [0.812, 0.008, 0.008, 0.8]
