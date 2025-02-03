@@ -13,13 +13,14 @@ class PlantGridItemWidget(FloatLayout):
     plant_data = DictProperty({})
 
     def on_select(self):
-        # Use the CSV data and map CSV keys to our internal keys.
+        # Convert CSV data to internal keys.
         new_plant = self.plant_data.copy()
         new_plant['plant_name'] = new_plant.get('common_name', 'Unknown')
         new_plant['plant_species'] = new_plant.get('type', 'Unknown Species')
-        new_plant['plant_status'] = 'New'         # Set default status.
+        new_plant['plant_status'] = 'New'         # Default status.
         new_plant['plant_location'] = 'Greenhouse'
         new_plant['plant_count'] = 1
+        # Use the CSV-provided id if available (otherwise, it might be generated elsewhere).
         app = App.get_running_app()
         app.greenhouse_data.add_user_plant(new_plant)
 
