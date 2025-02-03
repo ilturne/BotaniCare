@@ -10,9 +10,8 @@ base_list_url = "https://perenual.com/api/species-list"
 base_detail_url = "https://perenual.com/api/species/details"
 
 plant_list = [
-    #Add plants here
+    
 ]
-
 # Path to the CSV file where detailed plant data is stored
 csv_path = os.path.join("plantDatabase", "detailed_plants_new_data.csv")
 

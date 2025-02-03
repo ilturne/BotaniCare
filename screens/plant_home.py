@@ -1,8 +1,9 @@
+# plant_home.py
 import json
 from kivy.uix.screenmanager import Screen
 from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import StringProperty, ListProperty, NumericProperty
-from kivy.factory import Factory
+from widgets.plant_home_widgets import AddPlantPopup
 
 class PlantListItem(BoxLayout):
     plant_name = StringProperty("")
@@ -10,6 +11,7 @@ class PlantListItem(BoxLayout):
     plant_location = StringProperty("")
     plant_status_color = ListProperty([0.0, 0.0, 0.0, 1.0])
     plant_count = NumericProperty(0)
+    plant_species = StringProperty("")
 
     def update_status_color(self):
         if self.plant_status == "Ready for Harvest":
@@ -34,89 +36,67 @@ class PlantHomeScreen(Screen):
 
     def populate_plant_list(self):
         rv = self.ids.plant_rv
-
-        # Access user plants from greenhouse_data, not the app
         user_plants = self.greenhouse_data.user_added_plants
+
+        rv_items = []
         if user_plants:
-            plant = user_plants[0]
-            entry = {
-                'plant_name': plant.get('common_name', 'Unknown'),
-                'plant_status': plant.get('status', 'Unknown'),
-                'plant_location': plant.get('location', 'Unknown'),
-                'plant_count': plant.get('count', 0),
-            }
+            for plant in user_plants:
+                # Expecting keys added when the plant was selected.
+                entry = {
+                    'plant_name': plant.get('plant_name', 'Unknown'),
+                    'plant_status': plant.get('plant_status', 'Unknown'),
+                    'plant_location': plant.get('plant_location', 'Unknown'),
+                    'plant_species': plant.get('plant_species', 'Unknown Species'),
+                    'plant_count': plant.get('plant_count', 0),
+                }
+                item = PlantListItem(**entry)
+                item.update_status_color()
+                rv_items.append({
+                    'plant_name': item.plant_name,
+                    'plant_status': item.plant_status,
+                    'plant_species': item.plant_species,
+                    'plant_location': item.plant_location,
+                    'plant_status_color': item.plant_status_color,
+                    'plant_count': item.plant_count
+                })
         else:
-            entry = {
+            default_entry = {
                 'plant_name': "Example Plant",
                 'plant_status': "Ready for Harvest",
+                'plant_species': "Unknown Species",
                 'plant_location': "Isle 1 Bay 1",
                 'plant_count': 4,
             }
+            item = PlantListItem(**default_entry)
+            item.update_status_color()
+            rv_items.append({
+                'plant_name': item.plant_name,
+                'plant_status': item.plant_status,
+                'plant_species': item.plant_species,
+                'plant_location': item.plant_location,
+                'plant_status_color': item.plant_status_color,
+                'plant_count': item.plant_count
+            })
 
-        item = PlantListItem(**entry)
-        item.update_status_color()
+        rv.data = rv_items
 
-        rv.data = [{
-            'plant_name': item.plant_name,
-            'plant_status': item.plant_status,
-            'plant_location': item.plant_location,
-            'plant_status_color': item.plant_status_color,
-            'plant_count': item.plant_count
-        }]
+    def update_plant_list(self):
+        self.populate_plant_list()
 
     def sort_by(self, criteria):
         print(f"Sorting by {criteria}")
-        # Sorting logic if needed
+        # Add sorting logic if needed
 
     def open_add_popup(self):
-        """
-        Opens a popup that shows the 'public' plant_database from greenhouse_data.
-        We parse the JSON in 'default_image' field to get the 'original_url' for each plant.
-        """
-        add_popup = Factory.AddPlantPopup()
-        rv = add_popup.ids.available_plants_rv
-
-        # Use greenhouse_data.plant_database to list all plants
-        full_db = self.greenhouse_data.plant_database
-
-        # Build RecycleView data
-        rv.data = []
-        for plant in full_db:
-            raw_image = plant.get('default_image', '{}')
-            plant_image_url = self.parse_plant_image(raw_image)
-
-            entry_dict = {
-                'display_name': plant.get('common_name', 'Name'),
-                'display_species': plant.get('type', 'Species'),
-                'plant_image': plant_image_url
-            }
-            rv.data.append(entry_dict)
-
-        # Create a search callback
-        def perform_search(search_text):
-            filtered_data = []
-            for plant in full_db:
-                if search_text.lower() in plant.get('common_name', '').lower():
-                    raw_image = plant.get('default_image', '{}')
-                    plant_image_url = self.parse_plant_image(raw_image)
-                    filtered_data.append({
-                        'display_name': plant.get('common_name', 'Name'),
-                        'display_species': plant.get('type', 'Species'),
-                        'plant_image': plant_image_url
-                    })
-            rv.data = filtered_data
-
-        # Assign that function to the popup instance so KV can call popup.perform_search
-        add_popup.perform_search = perform_search
-        add_popup.open()
-
-    def parse_plant_image(self, raw_json_str):
-        try:
-            data = json.loads(raw_json_str)
-            print("Parsed default_image:", data)
-            print("Extracted original_url =", data.get('original_url'))
-            return data.get('original_url', 'resources/icons/plant_icon.png')
-        except (json.JSONDecodeError, TypeError):
-            return 'resources/icons/plant_icon.png'
-
-
+        popup = AddPlantPopup()
+        rv_data = []
+        # Populate the popup using the public plant database (CSV).
+        for plant in self.greenhouse_data.plant_database:
+            rv_data.append({
+                'display_name': plant.get('common_name', 'Unknown'),
+                'display_species': plant.get('type', 'Unknown'),
+                'plant_data': plant,  # Entire CSV row as a dictionary.
+                'popup_ref': popup,
+            })
+        popup.ids.available_plants_rv.data = rv_data
+        popup.open()

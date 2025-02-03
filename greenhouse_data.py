@@ -13,7 +13,6 @@ class GreenhouseData(EventDispatcher):
       - The main (public) plant database from detailed_plants_data.csv
       - The user-added plant database from user_added_plants.csv
     """
-
     # Default colors
     DEFAULT_ON_COLOR = [0.3, 0.6, 0.3, 1.0]
     DEFAULT_OFF_COLOR = [0.812, 0.008, 0.008, 0.8]
@@ -56,38 +55,29 @@ class GreenhouseData(EventDispatcher):
         self.title_text = f"Hello {self.user_name} you have {self.healthy_species}/{self.total_species} Healthy Species"
 
         # ------------------ Main (Public) Plant Database ------------------
-        # We'll store your CSV contents here as a list of dicts
         self.plant_database = []
         self.load_plant_database()
 
         # ------------------ User-Added Plant Database ------------------
-        # A separate list of dicts for plants the user adds
         self.user_added_plants = []
         self.load_user_plants()
-
-    # ------------------- PUBLIC PLANT DATABASE -------------------
 
     def load_plant_database(self):
         """
         Loads the main detailed_plants_data.csv into self.plant_database.
-        These are the plants that come "pre-installed" in your system.
         """
         csv_path = os.path.join("plantDatabase", "detailed_plants_data.csv")
         if not os.path.exists(csv_path):
             print(f"Warning: CSV not found at {csv_path}")
             return
-
         with open(csv_path, "r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             self.plant_database = list(reader)
-
         print(f"Loaded {len(self.plant_database)} entries from {csv_path}")
 
-    # ------------------- USER-ADDED PLANT DATABASE -------------------
     def load_user_plants(self):
         """
         Loads user_added_plants.csv into self.user_added_plants.
-        These are plants the user manually adds to the system.
         """
         user_csv = os.path.join("plantDatabase", "user_added_plants.csv")
         if os.path.exists(user_csv):
@@ -110,7 +100,6 @@ class GreenhouseData(EventDispatcher):
     def add_user_plant(self, plant):
         """
         Adds a new plant dict to self.user_added_plants and writes to CSV.
-        Example: plant = {'id': 1, 'common_name': 'Tomato', ...}
         """
         self.user_added_plants.append(plant)
         self.save_user_plants()
@@ -125,7 +114,6 @@ class GreenhouseData(EventDispatcher):
         print(f"Removed {before_count - after_count} user plants with ID={plant_id}.")
         self.save_user_plants()
 
-    # ------------------ Toggling Methods (Environment) ------------------
     def toggle_fan_status(self):
         self.fan_status = not self.fan_status
         self.fan_status_color = self.DEFAULT_ON_COLOR if self.fan_status else self.DEFAULT_OFF_COLOR
@@ -138,7 +126,6 @@ class GreenhouseData(EventDispatcher):
         self.water_pump_status = not self.water_pump_status
         self.water_pump_status_color = self.DEFAULT_ON_COLOR if self.water_pump_status else self.DEFAULT_OFF_COLOR
 
-    # -------------- Simulation Methods --------------
     def simulate_temperature(self):
         step = 0.1
         if self.temperature_increasing:
