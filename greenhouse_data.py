@@ -11,6 +11,12 @@ class GreenhouseData(EventDispatcher):
     Shared data class.
     Holds environment variables, the public plant database, and user-added plants.
     """
+    greenhouse_name = StringProperty("Ilya")
+    greenhouse_units = StringProperty("Celsius")
+    layout_rows = NumericProperty(5)
+    layout_cols = NumericProperty(5)
+    greenhouse_location = StringProperty("")  # If you want location, too
+
     # Default toggle colors
     DEFAULT_ON_COLOR = [0.3, 0.6, 0.3, 1.0]
     DEFAULT_OFF_COLOR = [0.812, 0.008, 0.008, 0.8]
@@ -61,7 +67,7 @@ class GreenhouseData(EventDispatcher):
 
     def _update_title_text(self):
         # Update the reactive title_text property.
-        self.title_text = f"Hello {self.user_name} you have {self.healthy_species}/{self.total_species} Healthy Species"
+        self.title_text = f"Hello {self.greenhouse_name} you have {self.healthy_species}/{self.total_species} Healthy Species"
 
     def load_plant_database(self):
         """Load the public plant database from CSV."""
