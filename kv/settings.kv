@@ -1,25 +1,9 @@
 #:kivy 2.3.0
-<SidebarButton@Button>:
-    background_normal: ''
-    background_color: 0, 0, 0, 0
-    icon_source: ''
-    selected: False
-    canvas.before:
-        Color:
-            rgba: (0.172, 0.251, 0.004, 0.45) if self.selected else (0, 0, 0, 0)
-        RoundedRectangle:
-            pos: self.center_x - dp(30), self.center_y - dp(30)
-            size: dp(60), dp(60)
-            radius: [dp(10), ]
-    Image:
-        source: root.icon_source
-        size_hint: 0.6, 0.6
-        center_x: root.center_x
-        center_y: root.center_y
 
 <SettingsScreen>:
     name: 'settings'
 
+    # Background Image
     FloatLayout:
         Image:
             source: 'resources/backgrounds/Setting_Background.png'
@@ -28,6 +12,7 @@
             size_hint: 1, 1
             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
 
+        # Title
         Label:
             text: 'Greenhouse Settings'
             bold: True
@@ -37,17 +22,18 @@
             size: self.texture_size
             pos_hint: {'center_x': 0.5, 'top': 0.95}
 
+        # Main Content Container
         FloatLayout:
             size_hint: 0.58, 0.58
             pos_hint: {'center_x': 0.5, 'top': 0.79}
-            
-            # This is the text input for the greenhouse name
+
+            # Greenhouse Name Input Section
             BoxLayout:
-                size_hint: (None, None)
+                size_hint: None, None
                 pos_hint: {'center_x': 0.5, 'top': 1.00}
-                height: dp(60)              
-                width: dp(750)            
-                padding: [dp(10), dp(0)]    
+                height: dp(60)
+                width: dp(750)
+                padding: [dp(10), 0]
                 spacing: dp(0)
                 canvas.before:
                     Color:
@@ -56,21 +42,23 @@
                         pos: self.pos
                         size: self.size
                         radius: [dp(10)]
-
                 TextInput:
                     id: text_input
                     multiline: False
-                    font_size: '36sp'    
+                    font_size: '36sp'
+                    halign: 'center'
                     background_normal: ''
                     background_active: ''
-                    halign: 'center'
-                    background_color: 0, 0, 0, 0 
+                    background_color: 0, 0, 0, 0
                     foreground_color: 0, 0, 0, 1
                     cursor_color: 0, 0, 0, 1
                     hint_text: "Greenhouse Name"
-                    hint_text_color: 0, 0, 0,1
-                    size_hint: (1, 1)
-                
+                    hint_text_color: 0, 0, 0, 1
+                    size_hint: 1, 1
+                    text: root.greenhouse_name
+                    on_text: root.greenhouse_name = self.text
+
+            # Units Section
             BoxLayout:
                 orientation: 'vertical'
                 size_hint: 0.48, 0.6
@@ -81,17 +69,14 @@
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
-                        radius: [dp(10), ]
-                
+                        radius: [dp(10)]
                 Label:
-                    id: unit_label
                     text: "Units"
                     font_size: '36sp'
                     pos_hint: {'center_x': 0.5}
                     color: 0, 0, 0, 1
                     size_hint: None, None
                     height: dp(40)
-                
                 FloatLayout:
                     Button:
                         size_hint: None, None
@@ -101,7 +86,6 @@
                         background_down: ''
                         background_color: 0, 0, 0, 0
                         on_release: root.greenhouse_unit_switch()
-
                         canvas.before:
                             Color:
                                 rgba: 1, 1, 1, 1  # white
@@ -109,49 +93,47 @@
                                 pos: self.pos
                                 size: self.size
                                 radius: [dp(20)]
-
                     Label:
+                        # Display the current unit as a string from the local property
                         text: "Imperial" if root.greenhouse_unit == "Imperial" else "Metric"
                         font_size: '24sp'
                         color: 0.2, 0.2, 0.2, 1
                         pos_hint: {'center_x': 0.5, 'center_y': 0.75}
-                    
                     Label:
                         text: "°F" if root.greenhouse_unit == "Imperial" else "°C"
                         font_size: '48sp'
                         color: 0, 0, 0, 1
                         pos_hint: {'center_x': 0.5, 'center_y': 0.5}
 
+            # Layout Section (Rows & Columns)
             BoxLayout:
                 orientation: 'vertical'
                 size_hint: 0.48, 0.6
                 pos_hint: {'center_x': 0.76, 'top': 0.78}
                 canvas.before:
                     Color:
-                        rgba: 0.78, 0.85, 0.68, 1  # #C7D9AD
+                        rgba: 0.78, 0.85, 0.68, 1
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
-                        radius: [dp(10), ]
-                
+                        radius: [dp(10)]
                 Label:
-                    id: unit_label
                     text: "Layout"
                     font_size: '36sp'
                     pos_hint: {'center_x': 0.5}
                     color: 0, 0, 0, 1
                     size_hint: None, None
                     height: dp(40)
-                
                 BoxLayout:
                     orientation: 'horizontal'
+                    
+                    # Rows Input
                     FloatLayout:
                         BoxLayout:
                             orientation: 'vertical'
                             size_hint: None, None
                             size: dp(160), dp(160)
                             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-
                             canvas.before:
                                 Color:
                                     rgba: 1, 1, 1, 1  # white
@@ -159,36 +141,36 @@
                                     pos: self.pos
                                     size: self.size
                                     radius: [dp(20)]
-
                         Label:
                             text: "Rows"
                             font_size: '24sp'
                             color: 0.2, 0.2, 0.2, 1
                             pos_hint: {'center_x': 0.5, 'center_y': 0.75}
-                        
                         TextInput:
                             id: row_input
                             multiline: False
-                            font_size: '48sp'  
+                            font_size: '48sp'
                             halign: 'center'
                             background_normal: ''
                             background_active: ''
-                            background_color: 0, 0, 0, 0 
+                            background_color: 0, 0, 0, 0
                             foreground_color: 0, 0, 0, 1
                             cursor_color: 0, 0, 0, 1
                             hint_text: "Setup"
                             hint_text_color: 0.8, 0.8, 0.8, 1
-                            size_hint: (1, 1)
+                            size_hint: 1, 1
                             pos_hint: {'center_x': 0.5, 'center_y': 0.15}
+                            # Bind text to a string version of the local property
+                            text: str(root.greenhouse_num_rows)
                             on_text: root.validate_row_input(self.text)
-
+                    
+                    # Columns Input
                     FloatLayout:
                         BoxLayout:
                             orientation: 'vertical'
                             size_hint: None, None
                             size: dp(160), dp(160)
                             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-
                             canvas.before:
                                 Color:
                                     rgba: 1, 1, 1, 1  # white
@@ -196,30 +178,29 @@
                                     pos: self.pos
                                     size: self.size
                                     radius: [dp(20)]
-
                         Label:
                             text: "Columns"
                             font_size: '24sp'
                             color: 0.2, 0.2, 0.2, 1
                             pos_hint: {'center_x': 0.5, 'center_y': 0.75}
-                        
                         TextInput:
                             id: col_input
                             multiline: False
-                            font_size: '48sp'  
+                            font_size: '48sp'
                             halign: 'center'
                             background_normal: ''
                             background_active: ''
-                            background_color: 0, 0, 0, 0 
+                            background_color: 0, 0, 0, 0
                             foreground_color: 0, 0, 0, 1
                             cursor_color: 0, 0, 0, 1
                             hint_text: "Setup"
                             hint_text_color: 0.8, 0.8, 0.8, 1
-                            size_hint: (1, 1)
+                            size_hint: 1, 1
                             pos_hint: {'center_x': 0.5, 'center_y': 0.15}
+                            text: str(root.greenhouse_num_colm)
                             on_text: root.validate_col_input(self.text)
-                        
-            # These are the buttons on the bottom of the screen
+
+            # Bottom Navigation Buttons
             BoxLayout:
                 orientation: 'horizontal'
                 size_hint: None, None
@@ -228,32 +209,23 @@
                 pos_hint: {'center_x': 0.5, 'center_y': 0.04}
                 canvas.before:
                     Color:
-                        rgba: 0.78, 0.85, 0.68, 1  # #C7D9AD
+                        rgba: 0.78, 0.85, 0.68, 1
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
-                        radius: [dp(10), ]
-            
+                        radius: [dp(10)]
                 SidebarButton:
                     icon_source: 'resources/icons/home.png'
                     on_release: app.root.current = "home"
-
                 SidebarButton:
                     icon_source: 'resources/icons/leaves.png'
                     on_press: app.root.current = "PlantHome"
-
                 SidebarButton:
                     icon_source: 'resources/icons/analytics.png'
                     on_press: print("Not Implemented Yet!")
-
                 SidebarButton:
                     icon_source: 'resources/icons/nature.png'
                     on_press: print("Not Implemented Yet!")
-
                 SidebarButton:
                     icon_source: 'resources/icons/settings.png'
                     selected: True
-
-            
-
-        

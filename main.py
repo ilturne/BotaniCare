@@ -25,7 +25,6 @@ class MyApp(App):
     Main application class.
     Creates and manages screens, schedules data updates, etc.
     """
-
     def build(self):
         # Create the shared greenhouse data
         self.greenhouse_data = GreenhouseData()
@@ -60,6 +59,10 @@ class MyApp(App):
         self.greenhouse_data.simulate_soil_moisture()
 
         self.home_screen.update_cards()
+    
+    def on_stop(self):
+        self.greenhouse_data.save_state()
+        
 
 if __name__ == '__main__':
     MyApp().run()

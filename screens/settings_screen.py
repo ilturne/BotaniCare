@@ -1,8 +1,6 @@
 # settings_screen.py
-
 from kivy.uix.screenmanager import Screen
 from kivy.properties import StringProperty, NumericProperty
-from kivy.uix.textinput import TextInput
 
 class SettingsScreen(Screen):
     """
@@ -16,7 +14,22 @@ class SettingsScreen(Screen):
     def __init__(self, greenhouse_data=None, **kwargs):
         super().__init__(**kwargs)
         self.greenhouse_data = greenhouse_data
-        
+
+    def on_pre_enter(self, *args):
+        # Update the local properties from the shared data when entering the screen
+        self.greenhouse_name = self.greenhouse_data.greenhouse_name
+        self.greenhouse_unit = self.greenhouse_data.greenhouse_units
+        self.greenhouse_num_rows = self.greenhouse_data.layout_rows
+        self.greenhouse_num_colm = self.greenhouse_data.layout_cols
+
+    def on_pre_leave(self, *args):
+        # Before leaving, propagate any changes back to the shared data and save state.
+        self.greenhouse_data.greenhouse_name = self.greenhouse_name
+        self.greenhouse_data.greenhouse_units = self.greenhouse_unit
+        self.greenhouse_data.layout_rows = self.greenhouse_num_rows
+        self.greenhouse_data.layout_cols = self.greenhouse_num_colm
+        self.greenhouse_data.save_state()
+
     def greenhouse_unit_switch(self):
         if self.greenhouse_unit == "Metric":
             self.greenhouse_unit = "Imperial"
@@ -24,13 +37,11 @@ class SettingsScreen(Screen):
             self.greenhouse_unit = "Metric"
 
     def validate_row_input(self, new_text):
-        filtered = "".join(ch for ch in new_text if ch.isdigit())
-        filtered = filtered[:2]
+        filtered = "".join(ch for ch in new_text if ch.isdigit())[:2]
         self.ids.row_input.text = filtered
         self.greenhouse_num_rows = int(filtered) if filtered else 0
 
     def validate_col_input(self, new_text):
-        filtered = "".join(ch for ch in new_text if ch.isdigit())
-        filtered = filtered[:2]
+        filtered = "".join(ch for ch in new_text if ch.isdigit())[:2]
         self.ids.col_input.text = filtered
         self.greenhouse_num_colm = int(filtered) if filtered else 0
