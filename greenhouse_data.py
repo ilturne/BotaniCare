@@ -18,7 +18,13 @@ class GreenhouseData(EventDispatcher):
     greenhouse_units = StringProperty("Imperial")
     layout_rows = NumericProperty(0)
     layout_cols = NumericProperty(0)
-    greenhouse_location = StringProperty("")
+
+    # Plant-related properties
+    total_plants = NumericProperty(0)
+    healthy_species = NumericProperty(0)
+    total_species = NumericProperty(0)
+    title_text = StringProperty("")
+    available_spots = NumericProperty(0)
     
     # Default colors for toggles
     DEFAULT_ON_COLOR = [0.3, 0.6, 0.3, 1.0]
@@ -41,12 +47,7 @@ class GreenhouseData(EventDispatcher):
     humidity_increasing = True
     light_level_increasing = True
     soil_moisture_increasing = True
-    
-    # Plant-related properties
-    healthy_species = NumericProperty(0)
-    total_species = NumericProperty(0)
-    title_text = StringProperty("")
-    
+
     # Thresholds for evaluating ring colors (for UI feedback)
     TEMPERATURE_THRESHOLDS = {"good": (64, 75), "warning": (50, 85)}
     HUMIDITY_THRESHOLDS = {"good": (0.5, 0.7), "warning": (0.4, 0.8)}
@@ -56,8 +57,7 @@ class GreenhouseData(EventDispatcher):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         # Initialize counts and title text
-        self.healthy_species = 0
-        self.total_species = 0
+        self.load_state()  # uses default STATE_FILE
         self._update_title_text()
     
         # Load plant data and user plants
@@ -65,9 +65,7 @@ class GreenhouseData(EventDispatcher):
         self.load_plant_database()
         self.user_added_plants = []
         self.load_user_plants()
-    
-        # Finally, load the saved state (settings and environment variables)
-        self.load_state()  # uses default STATE_FILE
+        
     
     def _update_title_text(self):
         """Update the reactive title text used in the UI."""
@@ -94,6 +92,7 @@ class GreenhouseData(EventDispatcher):
             df_user = pd.read_csv(user_csv)
             self.user_added_plants = df_user.to_dict(orient="records")
             self.total_species = len(self.user_added_plants)
+            self.total_plants = len(self.user_added_plants)
             self.healthy_species = len(self.user_added_plants)
             print(f"Loaded {len(self.user_added_plants)} user-added plants from {user_csv}")
         else:
@@ -225,6 +224,7 @@ class GreenhouseData(EventDispatcher):
             "fan_status": self.fan_status,
             "lighting_status": self.lighting_status,
             "water_pump_status": self.water_pump_status,
+            "total_plants": self.total_plants,
             "healthy_species": self.healthy_species,
             "total_species": self.total_species,
         }
@@ -256,6 +256,7 @@ class GreenhouseData(EventDispatcher):
             self.fan_status = state.get("fan_status", self.fan_status)
             self.lighting_status = state.get("lighting_status", self.lighting_status)
             self.water_pump_status = state.get("water_pump_status", self.water_pump_status)
+            self.total_plants = state.get("total_plants", self.total_plants)
             self.healthy_species = state.get("healthy_species", self.healthy_species)
             self.total_species = state.get("total_species", self.total_species)
             self._update_title_text()

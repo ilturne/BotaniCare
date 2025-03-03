@@ -58,7 +58,8 @@ class PlantHomeScreen(Screen):
     def on_pre_enter(self, *args):
         super().on_pre_enter(*args)
         self.populate_plant_list()
-
+        self.greenhouse_data._update_title_text() 
+        
     def populate_plant_list(self):
         rv = self.ids.plant_rv
         user_plants = self.greenhouse_data.user_added_plants
@@ -147,3 +148,4 @@ class PlantHomeScreen(Screen):
             })
         popup.ids.available_plants_rv.data = rv_data
         popup.open()
+        

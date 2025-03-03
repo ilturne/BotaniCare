@@ -45,3 +45,5 @@ class SettingsScreen(Screen):
         filtered = "".join(ch for ch in new_text if ch.isdigit())[:2]
         self.ids.col_input.text = filtered
         self.greenhouse_num_colm = int(filtered) if filtered else 0
+
+    # Possibly add a validate name function to max it out at 11 characters
