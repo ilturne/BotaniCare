@@ -57,8 +57,8 @@ class PlantHomeScreen(Screen):
 
     def on_pre_enter(self, *args):
         super().on_pre_enter(*args)
+        self.greenhouse_data._update_title_text()
         self.populate_plant_list()
-        self.greenhouse_data._update_title_text() 
         
     def populate_plant_list(self):
         rv = self.ids.plant_rv
