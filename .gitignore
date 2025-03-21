@@ -75,3 +75,6 @@ Desktop.ini
 
 # dotenv
 .env
+
+# state file since it will only be needed on the local machine
+state.json
