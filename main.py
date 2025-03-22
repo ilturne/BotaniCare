@@ -53,10 +53,7 @@ class MyApp(App):
 
     def update_environment(self, dt):
         # ... existing environment simulation code ...
-        self.greenhouse_data.simulate_temperature()
-        self.greenhouse_data.simulate_humidity()
-        self.greenhouse_data.simulate_light_level()
-        self.greenhouse_data.simulate_soil_moisture()
+        self.greenhouse_data.simulate_sensors()
 
         self.home_screen.update_cards()
     

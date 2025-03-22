@@ -42,21 +42,21 @@ class DFRobot_DHT20:
         return self.i2cbus.read_i2c_block_data(self._addr, reg, length)
 
 
-# Main script
-if __name__ == "__main__":
-    DHT20_I2C_BUS = 1  # I2C bus number
-    DHT20_I2C_ADDR = 0x38  # DHT20 I2C address
+# # Main script
+# if __name__ == "__main__":
+#     DHT20_I2C_BUS = 1  # I2C bus number
+#     DHT20_I2C_ADDR = 0x38  # DHT20 I2C address
 
-    dht20 = DFRobot_DHT20(DHT20_I2C_BUS, DHT20_I2C_ADDR)
+#     dht20 = DFRobot_DHT20(DHT20_I2C_BUS, DHT20_I2C_ADDR)
 
-    if not dht20.begin():
-        print("Failed to initialize DHT20 sensor.")
-    else:
-        print("DHT20 initialized successfully.")
-        try:
-            while True:
-                temp, hum = dht20.get_temperature_and_humidity()
-                print(f"Temperature: {temp:.2f} °C, Humidity: {hum:.2f} %")
-                time.sleep(2)  # Wait before the next read
-        except KeyboardInterrupt:
-            print("Exiting program.")
+#     if not dht20.begin():
+#         print("Failed to initialize DHT20 sensor.")
+#     else:
+#         print("DHT20 initialized successfully.")
+#         try:
+#             while True:
+#                 temp, hum = dht20.get_temperature_and_humidity()
+#                 print(f"Temperature: {temp:.2f} °C, Humidity: {hum:.2f} %")
+#                 time.sleep(2)  # Wait before the next read
+#         except KeyboardInterrupt:
+#             print("Exiting program.")

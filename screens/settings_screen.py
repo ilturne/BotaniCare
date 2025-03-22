@@ -13,7 +13,7 @@ class SettingsScreen(Screen):
     
     def __init__(self, greenhouse_data=None, **kwargs):
         super().__init__(**kwargs)
-        self.greenhouse_data = greenhouse_data #
+        self.greenhouse_data = greenhouse_data
 
     def on_pre_enter(self, *args):
         # Update the local properties from the shared data when entering the screen

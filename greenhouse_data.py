@@ -9,6 +9,9 @@ from kivy.properties import (
     BooleanProperty, ListProperty, NumericProperty, StringProperty
 )
 
+#Sensor Files Linux Only!
+#import SensorTesting.DHT20, SensorTesting.Grove, SensorTesting.SFH213FA
+
 class GreenhouseData(EventDispatcher):
     # File where the state is saved
     STATE_FILE = "state.json"
@@ -58,22 +61,20 @@ class GreenhouseData(EventDispatcher):
         super().__init__(**kwargs)
         # Initialize counts and title text
         self.load_state()  # uses default STATE_FILE
-        self._update_title_text()
     
         # Load plant data and user plants
         self.plant_database = []
         self.load_plant_database()
         self.user_added_plants = []
         self.load_user_plants()
-        
-    
+
     def _update_title_text(self):
         """Update the reactive title text used in the UI."""
         self.title_text = (
             f"Hello {self.greenhouse_name} you have "
             f"{self.healthy_species}/{self.total_species} Healthy Species"
         )
-    
+        
     def load_plant_database(self):
         """Load the public plant database from a CSV file."""
         csv_path = os.path.join("plantDatabase", "detailed_plants_data.csv")
@@ -159,9 +160,9 @@ class GreenhouseData(EventDispatcher):
     def toggle_water_pump_status(self):
         self.water_pump_status = not self.water_pump_status
         self.water_pump_status_color = self.DEFAULT_ON_COLOR if self.water_pump_status else self.DEFAULT_OFF_COLOR
-    
-    # Environment simulation methods
-    def simulate_temperature(self):
+
+    def simulate_sensors(self):
+        #Temperature Sensor
         step = 0.1
         if self.temperature_increasing:
             self.current_temperature += step
@@ -171,12 +172,11 @@ class GreenhouseData(EventDispatcher):
             self.current_temperature -= step
             if self.current_temperature <= 75.0:
                 self.temperature_increasing = True
-    
-    def simulate_humidity(self):
+
+        #Humidity Sensor
         self.current_humidity = random.uniform(0.40, 0.90)
-    
-    def simulate_light_level(self):
-        step = 10
+        
+        #Light Sensor
         if self.light_level_increasing:
             self.current_light_level += step
             if self.current_light_level >= 800:
@@ -185,9 +185,8 @@ class GreenhouseData(EventDispatcher):
             self.current_light_level -= step
             if self.current_light_level <= 200:
                 self.light_level_increasing = True
-    
-    def simulate_soil_moisture(self):
-        step = 0.01
+        
+        #Soil Moisture Sensor
         if self.soil_moisture_increasing:
             self.current_soil_moisture += step
             if self.current_soil_moisture >= 0.60:
@@ -207,6 +206,47 @@ class GreenhouseData(EventDispatcher):
         else:
             return [0.812, 0.008, 0.008, 0.8]
     
+    # Uncomment when usign the Pi
+    # def get_temperature(self):
+    #     try:
+    #         self.current_temperature = (((self.temperatureSensor.get_temperature()) * 1.8) + 32)
+    #     except Exception as e:
+    #         print("Temperature sensor error:", e)
+    #         self.current_temperature = None
+
+    #This is Linux only so when on the Pi uncomment this
+    # def get_light_level(self):
+    #     try:
+    #         adc_value = SensorTesting.SFH213FA.read_adc(0)
+    #         voltage = SensorTesting.SFH213FA.adc_to_voltage(adc_value)
+    #         light_intensity = SensorTesting.SFH213FA.voltage_to_light_intensity(voltage)
+    #         self.current_light_level = light_intensity
+    #     except Exception as e:
+    #         print("Light sensor error:", e)
+    #         self.current_light_level = None
+
+    # def get_humidity(self):
+    #     try:
+    #         DHT20_I2C_BUS = 1
+    #         DHT20_I2C_ADDR = 0x38
+    #         dht20 = SensorTesting.DHT20.DFRobot_DHT20(DHT20_I2C_BUS, DHT20_I2C_ADDR)
+    #         temp, hum = dht20.get_temperature_and_humidity()
+    #         self.current_humidity = hum * .01
+    #     except Exception as e:
+    #         print("Humidity sensor error:", e)
+    #         self.current_humidity = None
+
+    #This is Linux only so when on the Pi uncomment this
+    # def get_soil_moisture(self):
+    #     try:
+    #         adc_value = SensorTesting.Grove.read_adc(0)
+    #         voltage = SensorTesting.Grove.adc_to_voltage(adc_value)
+    #         moisture_percentage = SensorTesting.Grove.voltage_to_moisture(voltage)
+    #         self.current_soil_moisture = moisture_percentage * .01
+    #     except Exception as e:
+    #         print("Soil moisture sensor error:", e)
+    #         self.current_soil_moisture = None
+
     # Save and load state methods
     def save_state(self, state_file: str = None):
         """Save shared settings and environment variables to a JSON file."""
