@@ -3,7 +3,7 @@ import json
 from kivy.uix.screenmanager import Screen
 from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import StringProperty, ListProperty, NumericProperty, BooleanProperty
-from widgets.plant_home_widgets import AddPlantPopup
+from widgets.plant_home_widgets import AddPlantPopup, PremiumOnlyPopup
 
 class PlantListItem(BoxLayout):
     plant_id = StringProperty("")  # Must be a string
@@ -151,4 +151,9 @@ class PlantHomeScreen(Screen):
             })
         popup.ids.available_plants_rv.data = rv_data
         popup.open()
+    
+    def PremiumOnlyPopup(self):
+        popup = PremiumOnlyPopup()
+        popup.open()
+        pass
         

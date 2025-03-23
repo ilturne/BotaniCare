@@ -97,7 +97,78 @@
                 padding: [dp(35), 0, 0, 0]
                 orientation: 'lr-tb'
 
+<PremiumOnlyPopup>:
+    title: ""
+    size_hint: 0.7, 0.75
+    background_color: 1, 1, 1, 0.95
+    background: ''
+    separator_height: 0
+    FloatLayout:
+        Label:
+            text: "This Feature is Only Available in the Premium Version of BotaniCare."
+            font_size: "60sp"
+            color: 0.2, 0.2, 0.2, 1
+            size_hint: 0.8, 0.8
+            pos_hint: {'center_x': 0.5, 'center_y': 0.7}
+            halign: 'center'
+            valign: 'center'
+            text_size: self.size
+        
+        Label:
+            text: "Upgrade Now!"
+            font_size: "60sp"
+            color: 1, 0.84, 0, 1 
+            size_hint: 0.8, 0.8
+            pos_hint: {'center_x': 0.5, 'center_y': 0.4}
+            halign: 'center'
+            valign: 'center'
+            text_size: self.size
 
+        Label:
+            text: "$100,000 / month"
+            font_size: "60sp"
+            color: 0.33, 0.72, 0.40, 1  
+            size_hint: 0.8, 0.8
+            pos_hint: {'center_x': 0.5, 'center_y': 0.2}
+            halign: 'center'
+            valign: 'center'
+            text_size: self.size
+
+        Button:
+            background_normal: ''
+            background_down: ''
+            background_color: 0, 0, 0, 0
+            size_hint: None, None
+            width: dp(50)
+            height: dp(50)
+            pos: root.x + dp(10), root.top - dp(60)
+            on_press: root.dismiss()
+            padding: dp(10), 0, 0, 0    
+            Image:
+                source: 'resources/icons/cross.png'
+                size_hint: None, None
+                size: dp(60), dp(60)
+                keep_ratio: True
+                allow_stretch: False
+                pos: root.x, root.top - dp(60)
+
+<PremiumOnlyPopup>:
+    title: ""
+    size_hint: 0.7, 0.75
+    background_color: 1, 1, 1, 0.95
+    background: ''
+    separator_height: 0
+    FloatLayout:
+        Label:
+            text: "This Feature is Only Available in the Premium Version of BotaniCare."
+            font_size: "60sp"
+            color: 0.2, 0.2, 0.2, 1
+            size_hint: 0.8, 0.8
+            pos_hint: {'center_x': 0.5, 'center_y': 0.7}
+            halign: 'center'
+            valign: 'center'
+            text_size: self.size
+            
 <PlantGridItemWidget>:
     display_name: ""
     display_species: ""
@@ -258,11 +329,11 @@
 
             SidebarButton:
                 icon_source: 'resources/icons/analytics.png'
-                on_press: print("Not Implemented Yet!")
+                on_press: root.PremiumOnlyPopup()
 
             SidebarButton:
                 icon_source: 'resources/icons/nature.png'
-                on_press: print("Not Implemented Yet!")
+                on_press: root.PremiumOnlyPopup()
 
             SidebarButton:
                 icon_source: 'resources/icons/settings.png'

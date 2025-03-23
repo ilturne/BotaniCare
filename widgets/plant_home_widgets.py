@@ -55,3 +55,6 @@ class AddPlantPopup(Popup):
                 })
         if 'available_plants_rv' in self.ids:
             self.ids.available_plants_rv.data = filtered_data
+
+class PremiumOnlyPopup(Popup):
+    pass
