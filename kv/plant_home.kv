@@ -153,44 +153,98 @@
                 pos: root.x, root.top - dp(60)
 
 <PlantQuantityPopup>:
-    title: "Plant Options"
+    title: ""
     size_hint: 0.7, 0.5
-    auto_dismiss: False
-    BoxLayout:
-        orientation: 'vertical'
-        spacing: dp(20)
-        padding: dp(20)
-        Label:
-            text: "How many plants would you like to add?"
-            font_size: "24sp"
-        TextInput:
-            id: quantity_input
-            multiline: False
-            input_filter: 'int'
-        Label:
-            text: "Select row and column:"
-            font_size: "24sp"
-        BoxLayout:
-            orientation: 'horizontal'
-            spacing: dp(20)
-            Spinner:
-                id: row_spinner
-                text: "Row"
-                values: root.rows  # Uses generated list from layout_rows.
-            Spinner:
-                id: col_spinner
-                text: "Column"
-                values: root.columns  # Uses generated list from layout_cols.
-        BoxLayout:
-            size_hint_y: None
+    background_color: 1, 1, 1, 0.95
+    background: ''
+    separator_height: 0
+    FloatLayout:
+        # Close button similar to other popups
+        Button:
+            background_normal: ''
+            background_down: ''
+            background_color: 0, 0, 0, 0
+            size_hint: None, None
+            width: dp(50)
             height: dp(50)
+            pos: root.x + dp(10), root.top - dp(60)
+            on_press: root.dismiss()
+            padding: dp(10), 0, 0, 0    
+            Image:
+                source: 'resources/icons/green_cross.png'
+                size_hint: None, None
+                size: dp(60), dp(60)
+                keep_ratio: True
+                allow_stretch: False
+                pos: root.x, root.top - dp(60)
+    
+        BoxLayout:
+            orientation: 'vertical'
             spacing: dp(20)
-            Button:
-                text: "Cancel"
-                on_release: root.dismiss()
-            Button:
-                text: "Add Plant"
-                on_release: root.on_confirm(quantity_input.text, row_spinner.text, col_spinner.text)
+            padding: dp(20)
+            size_hint: 0.9, 0.9
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+    
+            Label:
+                text: "How many plants would you like to add?"
+                font_size: "24sp"
+                color: 0.2, 0.2, 0.2, 1
+    
+            TextInput:
+                id: quantity_input
+                multiline: False
+                input_filter: 'int'
+                font_size: "20sp"
+                background_normal: ''
+                background_active: ''
+                foreground_color: 0, 0, 0, 1
+                size_hint_y: 1.5
+                
+    
+            Label:
+                text: "Select row and column:"
+                font_size: "24sp"
+                color: 0.2, 0.2, 0.2, 1
+    
+            BoxLayout:
+                orientation: 'horizontal'
+                spacing: dp(20)
+    
+                Spinner:
+                    id: row_spinner
+                    text: "Row"
+                    values: root.rows
+                    font_size: "20sp"
+                    background_normal: ''
+                    background_color: 0.78, 0.85, 0.68, 1
+    
+                Spinner:
+                    id: col_spinner
+                    text: "Column"
+                    values: root.columns
+                    font_size: "20sp"
+                    background_normal: ''
+                    background_color: 0.78, 0.85, 0.68, 1
+    
+            BoxLayout:
+                size_hint_y: None
+                height: dp(50)
+                spacing: dp(20)
+    
+                Button:
+                    text: "Cancel"
+                    on_release: root.dismiss()
+                    font_size: "20sp"
+                    background_normal: ''
+                    background_color: 0.78, 0.85, 0.68, 1
+    
+                Button:
+                    text: "Add Plant"
+                    on_release: root.on_confirm(quantity_input.text, row_spinner.text, col_spinner.text)
+                    font_size: "20sp"
+                    background_normal: ''
+                    background_color: 0.78, 0.85, 0.68, 1
+
 
 <PlantGridItemWidget>:
     display_name: ""
