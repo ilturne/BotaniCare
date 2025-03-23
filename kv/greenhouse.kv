@@ -90,7 +90,7 @@
         keep_ratio: False
         size_hint: (1, 1)
         pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-
+            
     # Status Cards
     StatusCard:
         id: temperature_card
@@ -278,7 +278,7 @@
                     radius: [dp(5), ]
 
             Label:
-                text: f"Total Plants:   {root.total_plants}"
+                text: f"Total Plants:    {app.greenhouse_data.total_plants}"
                 font_size: "20sp"
                 color: 1, 1, 1, 1
                 halign: 'left'
@@ -302,7 +302,7 @@
                     radius: [dp(5), ]
 
             Label:
-                text: f"Total Species:  {root.total_species}"
+                text: f"Total Species:  {app.greenhouse_data.total_species}"
                 font_size: "20sp"
                 color: 1, 1, 1, 1
                 halign: 'left'
@@ -326,7 +326,7 @@
                     radius: [dp(5), ]
 
             Label:
-                text: f"Available Spots:   {root.available_spots}"
+                text: f"Available Spots:   {app.greenhouse_data.available_spots}"
                 font_size: "18sp"
                 color: 1, 1, 1, 1
                 halign: 'left'
@@ -412,3 +412,25 @@
             size: dp(100), dp(30)
             pos_hint: {'center_x': 0.5, 'y': 0.05}
             on_press: print("Navigating to Alerts Page")
+
+    # Exit Button
+    Button:
+        background_normal: ''
+        background_down: ''
+        background_color: 0, 0, 0, 0
+        size_hint: None, None
+        width: dp(60)
+        height: dp(60)
+        pos_hint: {'center_x': 0.04, 'center_y': 0.95}
+        padding: dp(10), 0, 0, 0
+        on_release: app.stop()
+        Image:
+            source: 'resources/icons/white_cross.png'
+            size_hint: None, None
+            size: dp(70), dp(70)
+            keep_ratio: True
+            allow_stretch: False
+            center_x: self.parent.center_x
+            center_y: self.parent.center_y
+    
+    

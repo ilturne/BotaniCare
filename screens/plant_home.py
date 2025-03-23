@@ -59,7 +59,10 @@ class PlantHomeScreen(Screen):
         super().on_pre_enter(*args)
         self.greenhouse_data._update_title_text()
         self.populate_plant_list()
-        
+    
+    def on_pre_leave(self, *args):
+        self.greenhouse_data.save_state()
+
     def populate_plant_list(self):
         rv = self.ids.plant_rv
         user_plants = self.greenhouse_data.user_added_plants

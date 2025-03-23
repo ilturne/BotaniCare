@@ -1,6 +1,9 @@
 # screens/home_screen.py
 from kivy.uix.screenmanager import Screen
-from widgets.greenhouse_app import GreenhouseApp #This probably won't be necessary later but I don't know what to do with it right now
+from widgets.greenhouse_app import GreenhouseApp  # This probably won't be necessary later but I don't know what to do with it right now
+from kivy.core.window import Window
+from kivy.app import App
+import sys
 
 class HomeScreen(Screen):
     """
@@ -22,6 +25,10 @@ class HomeScreen(Screen):
         super().on_pre_enter(*args)
         # Example: update your cards here:
         self.update_cards()
+        self.greenhouse_data.load_state()
+    
+    def on_pre_leave(self, *args):
+        self.greenhouse_data.save_state()
 
     def update_cards(self):
         """
@@ -30,10 +37,16 @@ class HomeScreen(Screen):
         if not self.greenhouse_data:
             return
 
+        # Determine the temperature unit suffix based on the current unit setting.
+        if self.greenhouse_data.greenhouse_units == "Imperial":
+            temp_unit = "°F"
+        else:
+            temp_unit = "°C"
+
         # Temperature card:
         self.update_card(
             card_id="temperature_card",
-            value=f"{self.greenhouse_data.current_temperature:.1f}°F",
+            value=f"{self.greenhouse_data.current_temperature:.1f}{temp_unit}",
             thresholds=self.greenhouse_data.TEMPERATURE_THRESHOLDS,
             value_property=self.greenhouse_data.current_temperature,
         )
@@ -49,7 +62,7 @@ class HomeScreen(Screen):
         # Light level card:
         self.update_card(
             card_id="light_level_card",
-            value=f"{self.greenhouse_data.current_light_level:.0f} lux",
+            value=f"{self.greenhouse_data.current_light_level:.0f}%", #Fix this later, it shouldn't be 100s of percent
             thresholds=self.greenhouse_data.LIGHT_LEVEL_THRESHOLDS,
             value_property=self.greenhouse_data.current_light_level,
         )

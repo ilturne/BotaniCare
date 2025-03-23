@@ -66,7 +66,9 @@ class GreenhouseData(EventDispatcher):
         self.plant_database = []
         self.load_plant_database()
         self.user_added_plants = []
+        self.update_available_spots()
         self.load_user_plants()
+    
 
     def _update_title_text(self):
         """Update the reactive title text used in the UI."""
@@ -74,7 +76,9 @@ class GreenhouseData(EventDispatcher):
             f"Hello {self.greenhouse_name} you have "
             f"{self.healthy_species}/{self.total_species} Healthy Species"
         )
-        
+    def update_available_spots(self):
+        self.available_spots = (self.layout_rows * self.layout_cols) - self.total_plants 
+
     def load_plant_database(self):
         """Load the public plant database from a CSV file."""
         csv_path = os.path.join("plantDatabase", "detailed_plants_data.csv")
@@ -257,6 +261,7 @@ class GreenhouseData(EventDispatcher):
             "greenhouse_units": self.greenhouse_units,
             "layout_rows": self.layout_rows,
             "layout_cols": self.layout_cols,
+            "available_spots": self.available_spots,
             "current_temperature": self.current_temperature,
             "current_humidity": self.current_humidity,
             "current_light_level": self.current_light_level,
@@ -289,6 +294,7 @@ class GreenhouseData(EventDispatcher):
             self.greenhouse_units = state.get("greenhouse_units", self.greenhouse_units)
             self.layout_rows = state.get("layout_rows", self.layout_rows)
             self.layout_cols = state.get("layout_cols", self.layout_cols)
+            self.available_spots = state.get("available_spots", self.available_spots)
             self.current_temperature = state.get("current_temperature", self.current_temperature)
             self.current_humidity = state.get("current_humidity", self.current_humidity)
             self.current_light_level = state.get("current_light_level", self.current_light_level)
