@@ -53,8 +53,12 @@ class MyApp(App):
 
     def update_environment(self, dt):
         # ... existing environment simulation code ...
-        self.greenhouse_data.simulate_sensors()
-
+        #self.greenhouse_data.simulate_sensors()
+        self.greenhouse_data.get_humidity()
+        self.greenhouse_data.get_light_level()
+        self.greenhouse_data.get_temperature()
+        self.greenhouse_data.get_soil_moisture()
+        
         self.home_screen.update_cards()
     
     def on_stop(self):
