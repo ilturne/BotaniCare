@@ -47,7 +47,6 @@ class GreenhouseController:
         # Loop over each plant to determine if watering is due.
         for plant in self.greenhouse_data.user_added_plants:
             benchmark = plant.get('watering_general_benchmark', "{}")
-            print(benchmark)
             try:
                 import ast
                 benchmark_dict = ast.literal_eval(benchmark)
