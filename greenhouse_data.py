@@ -10,10 +10,26 @@ from kivy.properties import (
 )
 
 #Sensor Files Linux Only!
-import SensorTesting.DHT20, SensorTesting.Grove, SensorTesting.SFH213FA
+#import SensorTesting.DHT20, SensorTesting.Grove, SensorTesting.SFH213FA
 
 #temperature sensor data
-from w1thermsensor import W1ThermSensor
+#from w1thermsensor import W1ThermSensor
+
+HARDINESS_TEMPERATURE_TABLE = {
+    1:  (-60, -50),
+    2:  (-50, -40),
+    3:  (-40, -30),
+    4:  (-30, -20),
+    5:  (-20, -10),
+    6:  (-10,   0),
+    7:  (  0,  10),
+    8:  ( 10,  20),
+    9:  ( 20,  30),
+    10: ( 30,  40),
+    11: ( 40,  50),
+    12: ( 50,  60),
+    13: ( 60,  70),
+}
 
 class GreenhouseData(EventDispatcher):
     # File where the state is saved
@@ -55,7 +71,7 @@ class GreenhouseData(EventDispatcher):
     soil_moisture_increasing = True
 
     #sensor variables
-    temperatureSensor = W1ThermSensor()
+    #temperatureSensor = W1ThermSensor()
 
     # Thresholds for evaluating ring colors (for UI feedback)
     TEMPERATURE_THRESHOLDS = {"good": (64, 75), "warning": (50, 85)}
@@ -128,7 +144,7 @@ class GreenhouseData(EventDispatcher):
             "edible_fruit", "edible_fruit_taste_profile", "fruit_nutritional_value",
             "fruit_color", "harvest_season", "leaf", "leaf_color", "edible_leaf",
             "cuisine", "medicinal", "poisonous_to_humans", "poisonous_to_pets",
-            "description", "default_image", "other_images", "search_term"
+            "description", "default_image", "other_images", "search_term", "temperature_min", "temperature_max"
         ]
         if not self.user_added_plants:
             df_user = pd.DataFrame(columns=headers)
@@ -137,6 +153,9 @@ class GreenhouseData(EventDispatcher):
         df_user.to_csv(user_csv, index=False)
         print(f"Saved {len(self.user_added_plants)} user-added plants to {user_csv}.")
     
+    def get_hardiness_temp_range(zone: int) -> tuple[float, float]:
+        return HARDINESS_TEMPERATURE_TABLE.get(zone, (None, None))
+
     def add_user_plant(self, plant):
         """Add a new plant, update counts, and save."""
         self.user_added_plants.append(plant)
@@ -217,52 +236,52 @@ class GreenhouseData(EventDispatcher):
             return [0.812, 0.008, 0.008, 0.8]
     
     # Uncomment when usign the Pi
-    def get_temperature(self):
-        if self.greenhouse_units == "Imperial":
-            try:
-                self.current_temperature = (((self.temperatureSensor.get_temperature()) * 1.8) + 32)
-            except Exception as e:
-                print("Temperature sensor error:", e)
-                self.current_temperature = 0
-        else: 
-            try:
-                self.current_temperature = self.temperatureSensor.get_temperature()
-            except Exception as e:
-                print("Temperature sensor error:", e)
-                self.current_temperature = 0
+    # def get_temperature(self):
+    #     if self.greenhouse_units == "Imperial":
+    #         try:
+    #             self.current_temperature = (((self.temperatureSensor.get_temperature()) * 1.8) + 32)
+    #         except Exception as e:
+    #             print("Temperature sensor error:", e)
+    #             self.current_temperature = 0
+    #     else: 
+    #         try:
+    #             self.current_temperature = self.temperatureSensor.get_temperature()
+    #         except Exception as e:
+    #             print("Temperature sensor error:", e)
+    #             self.current_temperature = 0
 
-    #This is Linux only so when on the Pi uncomment this
-    def get_light_level(self):
-        try:
-            adc_value = SensorTesting.SFH213FA.read_adc(0)
-            voltage = SensorTesting.SFH213FA.adc_to_voltage(adc_value)
-            light_intensity = SensorTesting.SFH213FA.voltage_to_light_intensity(voltage)
-            self.current_light_level = light_intensity
-        except Exception as e:
-            print("Light sensor error:", e)
-            self.current_light_level = 0
+    # #This is Linux only so when on the Pi uncomment this
+    # def get_light_level(self):
+    #     try:
+    #         adc_value = SensorTesting.SFH213FA.read_adc(0)
+    #         voltage = SensorTesting.SFH213FA.adc_to_voltage(adc_value)
+    #         light_intensity = SensorTesting.SFH213FA.voltage_to_light_intensity(voltage)
+    #         self.current_light_level = light_intensity
+    #     except Exception as e:
+    #         print("Light sensor error:", e)
+    #         self.current_light_level = 0
 
-    def get_humidity(self):
-        try:
-            DHT20_I2C_BUS = 1
-            DHT20_I2C_ADDR = 0x38
-            dht20 = SensorTesting.DHT20.DFRobot_DHT20(DHT20_I2C_BUS, DHT20_I2C_ADDR)
-            temp, hum = dht20.get_temperature_and_humidity()
-            self.current_humidity = hum * .01
-        except Exception as e:
-            print("Humidity sensor error:", e)
-            self.current_humidity = 0
+    # def get_humidity(self):
+    #     try:
+    #         DHT20_I2C_BUS = 1
+    #         DHT20_I2C_ADDR = 0x38
+    #         dht20 = SensorTesting.DHT20.DFRobot_DHT20(DHT20_I2C_BUS, DHT20_I2C_ADDR)
+    #         temp, hum = dht20.get_temperature_and_humidity()
+    #         self.current_humidity = hum * .01
+    #     except Exception as e:
+    #         print("Humidity sensor error:", e)
+    #         self.current_humidity = 0
 
-    #This is Linux only so when on the Pi uncomment this
-    def get_soil_moisture(self):
-        try:
-            adc_value = SensorTesting.Grove.read_adc(0)
-            voltage = SensorTesting.Grove.adc_to_voltage(adc_value)
-            moisture_percentage = SensorTesting.Grove.voltage_to_moisture(voltage)
-            self.current_soil_moisture = moisture_percentage * .01
-        except Exception as e:
-            print("Soil moisture sensor error:", e)
-            self.current_soil_moisture = 0
+    # #This is Linux only so when on the Pi uncomment this
+    # def get_soil_moisture(self):
+    #     try:
+    #         adc_value = SensorTesting.Grove.read_adc(0)
+    #         voltage = SensorTesting.Grove.adc_to_voltage(adc_value)
+    #         moisture_percentage = SensorTesting.Grove.voltage_to_moisture(voltage)
+    #         self.current_soil_moisture = moisture_percentage * .01
+    #     except Exception as e:
+    #         print("Soil moisture sensor error:", e)
+    #         self.current_soil_moisture = 0
 
     # Save and load state methods
     def save_state(self, state_file: str = None):
@@ -292,6 +311,20 @@ class GreenhouseData(EventDispatcher):
             print(f"State saved to {state_file}.")
         except Exception as e:
             print("Error saving state:", e)
+    
+    def get_global_temperature_max(self):
+        lowest_max = None
+        for plant in self.user_added_plants:
+            temp_max_value = plant.get("temperature_max")
+            if temp_max_value is None:
+                continue
+            try:
+                temp_max = float(temp_max_value)
+            except ValueError:
+                continue
+            if lowest_max is None or temp_max < lowest_max:
+                lowest_max = temp_max
+        return lowest_max if lowest_max is not None else 0
     
     def load_state(self, state_file: str = None):
         """Load shared settings and environment variables from a JSON file."""

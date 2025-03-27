@@ -10,6 +10,10 @@ from kivy.uix.screenmanager import ScreenManager, NoTransition
 
 # Shared Greenhouse Data
 from greenhouse_data import GreenhouseData
+
+# Automation Logic File
+from automation import GreenhouseController
+
 # Screens
 from screens.home_screen import HomeScreen
 from screens.plant_home import PlantHomeScreen
@@ -28,7 +32,7 @@ class MyApp(App):
     def build(self):
         # Create the shared greenhouse data
         self.greenhouse_data = GreenhouseData()
-
+        self.greenhouse_controller = GreenhouseController(self.greenhouse_data)
         # ScreenManager setup
         self.sm = ScreenManager(transition=NoTransition())
 
@@ -45,19 +49,23 @@ class MyApp(App):
         self.settings_screen = SettingsScreen(greenhouse_data=self.greenhouse_data, name='settings')
         self.sm.add_widget(self.settings_screen)
         # Schedule simulation updates
-        Clock.schedule_interval(self.update_environment, 1.0)
+        Clock.schedule_interval(self.update_environment, 2.0)
 
         # Start on the home screen
         self.sm.current = 'home'
         return self.sm
 
     def update_environment(self, dt):
-        # ... existing environment simulation code ...
-        #self.greenhouse_data.simulate_sensors()
-        self.greenhouse_data.get_humidity()
-        self.greenhouse_data.get_light_level()
-        self.greenhouse_data.get_temperature()
-        self.greenhouse_data.get_soil_moisture()
+        self.greenhouse_data.simulate_sensors()
+
+        self.greenhouse_controller.check_temperature()
+        self.greenhouse_controller.check_watering()
+        self.greenhouse_controller.check_light()
+
+        # self.greenhouse_data.get_humidity()
+        # self.greenhouse_data.get_light_level()
+        # self.greenhouse_data.get_temperature()
+        # self.greenhouse_data.get_soil_moisture()
         
         self.home_screen.update_cards()
     
