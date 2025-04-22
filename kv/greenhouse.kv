@@ -9,14 +9,14 @@
         RoundedRectangle:
             pos: self.x + dp(4), self.y - dp(4)
             size: self.size
-            radius: [dp(20), ]
+            radius: [dp(20),]
         # Main card background
         Color:
-            rgba: root.bg_color if hasattr(root, "bg_color") else (0.78, 0.85, 0.68, 0.9)
+            rgba: root.bg_color if hasattr(root, 'bg_color') else (0.78, 0.85, 0.68, 0.9)
         RoundedRectangle:
             pos: self.pos
             size: self.size
-            radius: [dp(20), ]
+            radius: [dp(20),]
 
 <StatusCard@BaseCard>:
     title: 'NO_TITLE'
@@ -39,7 +39,7 @@
 
     Label:
         text: root.title
-        font_size: "31sp"
+        font_size: '31sp'
         color: 1, 1, 1, 1
         size_hint_y: None
         height: dp(40)
@@ -60,7 +60,7 @@
         text_size: self.size
 
 <WhiteButton@Button>:
-    font_size: "20sp"
+    font_size: '20sp'
     size_hint: None, None
     size: dp(120), dp(40)
     background_normal: ''
@@ -72,7 +72,7 @@
         RoundedRectangle:
             pos: self.pos
             size: self.size
-            radius: [dp(10), ]
+            radius: [dp(10),]
 
 <SystemStatusCard@BaseCard>:
     size: dp(436), dp(282)
@@ -83,52 +83,88 @@
 <AlertCard@BaseCard>:
     size: dp(203), dp(282)
 
+<ToggleRow@BoxLayout>:
+    text: ''
+    status_color: 1, 1, 1, 1
+    toggle_callback: None
+    orientation: 'horizontal'
+    size_hint: None, None
+    size: dp(400), dp(40)
+    spacing: dp(20)
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            pos: self.x + dp(30), self.y - dp(10)
+            size: self.width - dp(30), dp(2)
+
+    Widget:
+        size_hint: None, None
+        size: dp(12), dp(12)
+        pos_hint: {'center_x': 0.5, 'center_y': 0.47}
+        canvas.before:
+            Color:
+                rgba: root.status_color
+            Ellipse:
+                pos: self.pos
+                size: self.size
+
+    Label:
+        text: root.text
+        font_size: '25sp'
+        color: 1, 1, 1, 1
+        halign: 'left'
+        valign: 'middle'
+        text_size: self.width, None
+
+    WhiteButton:
+        text: 'Override'
+        on_press: root.toggle_callback()
+
 <GreenhouseApp>:
-    Image:
-        source: 'resources/backgrounds/MAIN_BACKGROUND.png'
-        allow_stretch: True
-        keep_ratio: False
-        size_hint: (1, 1)
-        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-            
+    canvas.before:
+        Rectangle:
+            source: 'resources/backgrounds/MAIN_BACKGROUND.png'
+            pos: self.pos
+            size: self.size
+
     # Status Cards
     StatusCard:
         id: temperature_card
-        title: "Temperature"
+        title: 'Temperature'
         bg_color: 0.78, 0.85, 0.68, 0.9
         value_font_size: 30
         pos: dp(189), dp(325)
 
     StatusCard:
         id: humidity_card
-        title: "Humidity"
+        title: 'Humidity'
         bg_color: 0.17, 0.25, 0.004, 0.9
         value_font_size: 51
         pos: dp(425), dp(325)
 
     StatusCard:
         id: soil_moisture_card
-        title: "Soil Moisture"
+        title: 'Soil Moisture'
         bg_color: 0.53, 0.65, 0.29, 0.9
         value_font_size: 51
         pos: dp(661), dp(325)
 
     StatusCard:
         id: light_level_card
-        title: "Light Level"
+        title: 'Light Level'
         bg_color: 0.65, 0.78, 0.50, 0.9
         value_font_size: 35
         pos: dp(897), dp(325)
 
-    # System Status Card
     SystemStatusCard:
         id: system_status_card
         bg_color: 0.78, 0.85, 0.68, 0.9
         pos: dp(189), dp(20)
 
         Label:
-            text: "System Status"
-            font_size: "31sp"
+            text: 'System Status'
+            font_size: '31sp'
             color: 1, 1, 1, 1
             size_hint_y: None
             height: dp(40)
@@ -137,123 +173,32 @@
             valign: 'middle'
             text_size: self.width, None
 
-        # Fan Section
-        BoxLayout:
-            orientation: 'horizontal'
-            size_hint: None, None
-            size: dp(400), dp(40)
+        ToggleRow:
+            text: 'Fan'
+            status_color: app.greenhouse_data.fan_status_color
+            toggle_callback: app.greenhouse_data.toggle_fan_status
             pos_hint: {'center_x': 0.5, 'center_y': 0.67}
-            spacing: dp(20)
 
-            canvas.before:
-                Color:
-                    rgba: 1, 1, 1, 1
-                Rectangle:
-                    pos: self.x + dp(30), self.y - dp(10)
-                    size: self.width - dp(30), dp(2)
-
-            Widget:
-                size_hint: None, None
-                size: dp(12), dp(12)
-                pos_hint: {'center_x': 0.5, 'center_y': 0.47}
-                canvas.before:
-                    Color:
-                        rgba: app.greenhouse_data.fan_status_color
-                    Ellipse:
-                        pos: self.pos
-                        size: self.size
-
-            Label:
-                text: "Fan"
-                font_size: "25sp"
-                color: 1, 1, 1, 1
-                halign: 'left'
-                valign: 'middle'
-                text_size: self.width, None
-
-            WhiteButton:
-                text: "Override"
-                # Toggling the fan status updates the property => auto color change
-                on_press: app.greenhouse_data.toggle_fan_status()
-
-        # Lighting Section
-        BoxLayout:
-            orientation: 'horizontal'
-            size_hint: None, None
-            size: dp(400), dp(40)
+        ToggleRow:
+            text: 'Lighting'
+            status_color: app.greenhouse_data.lighting_status_color
+            toggle_callback: app.greenhouse_data.toggle_lighting_status
             pos_hint: {'center_x': 0.5, 'center_y': 0.43}
-            spacing: dp(20)
 
-            canvas.before:
-                Color:
-                    rgba: 1, 1, 1, 1
-                Rectangle:
-                    pos: self.x + dp(30), self.y - dp(10)
-                    size: self.width - dp(30), dp(2)
-
-            Widget:
-                size_hint: None, None
-                size: dp(12), dp(12)
-                pos_hint: {'center_x': 0.5, 'center_y': 0.47}
-                canvas.before:
-                    Color:
-                        rgba: app.greenhouse_data.lighting_status_color
-                    Ellipse:
-                        pos: self.pos
-                        size: self.size
-
-            Label:
-                text: "Lighting"
-                font_size: "25sp"
-                color: 1, 1, 1, 1
-                halign: 'left'
-                valign: 'middle'
-                text_size: self.width, None
-
-            WhiteButton:
-                text: "Override"
-                on_press: app.greenhouse_data.toggle_lighting_status()
-
-        # Water Pump Section
-        BoxLayout:
-            orientation: 'horizontal'
-            size_hint: None, None
-            size: dp(400), dp(40)
+        ToggleRow:
+            text: 'Water Pump'
+            status_color: app.greenhouse_data.water_pump_status_color
+            toggle_callback: app.greenhouse_data.toggle_water_pump_status
             pos_hint: {'center_x': 0.5, 'center_y': 0.19}
-            spacing: dp(20)
 
-            Widget:
-                size_hint: None, None
-                size: dp(12), dp(12)
-                pos_hint: {'center_x': 0.5, 'center_y': 0.47}
-                canvas.before:
-                    Color:
-                        rgba: app.greenhouse_data.water_pump_status_color
-                    Ellipse:
-                        pos: self.pos
-                        size: self.size
-
-            Label:
-                text: "Water Pump"
-                font_size: "25sp"
-                color: 1, 1, 1, 1
-                halign: 'left'
-                valign: 'middle'
-                text_size: self.width, None
-
-            WhiteButton:
-                text: "Override"
-                on_press: app.greenhouse_data.toggle_water_pump_status()
-
-    # Plant List Card
     PlantListCard:
         id: plant_list_card
         bg_color: 0.17, 0.25, 0.004, 0.9
         pos: dp(661), dp(20)
 
         Label:
-            text: "Plant List"
-            font_size: "31sp"
+            text: 'Plant List'
+            font_size: '31sp'
             color: 1, 1, 1, 1
             size_hint_y: None
             height: dp(40)
@@ -275,11 +220,11 @@
                 RoundedRectangle:
                     pos: self.pos
                     size: self.size
-                    radius: [dp(5), ]
+                    radius: [dp(5),]
 
             Label:
                 text: f"Total Plants:    {app.greenhouse_data.total_plants}"
-                font_size: "20sp"
+                font_size: '20sp'
                 color: 1, 1, 1, 1
                 halign: 'left'
                 valign: 'middle'
@@ -299,11 +244,11 @@
                 RoundedRectangle:
                     pos: self.pos
                     size: self.size
-                    radius: [dp(5), ]
+                    radius: [dp(5),]
 
             Label:
                 text: f"Total Species:  {app.greenhouse_data.total_species}"
-                font_size: "20sp"
+                font_size: '20sp'
                 color: 1, 1, 1, 1
                 halign: 'left'
                 valign: 'middle'
@@ -323,11 +268,11 @@
                 RoundedRectangle:
                     pos: self.pos
                     size: self.size
-                    radius: [dp(5), ]
+                    radius: [dp(5),]
 
             Label:
                 text: f"Available Spots:   {app.greenhouse_data.available_spots}"
-                font_size: "18sp"
+                font_size: '18sp'
                 color: 1, 1, 1, 1
                 halign: 'left'
                 valign: 'middle'
@@ -335,13 +280,12 @@
                 padding_x: dp(10)
 
         WhiteButton:
-            text: "Plant Home"
+            text: 'Plant Home'
             size_hint: None, None
             size: dp(150), dp(40)
             pos_hint: {'center_x': 0.5, 'y': 0.15}
-            on_release: app.root.current = "PlantHome"
+            on_release: app.root.current = 'PlantHome'
 
-    # Alert Card
     AlertCard:
         id: alert_card
         bg_color: 0.78, 0.85, 0.68, 0.9
@@ -412,8 +356,8 @@
             size: dp(100), dp(30)
             pos_hint: {'center_x': 0.5, 'y': 0.05}
             on_press: print("Navigating to Alerts Page")
-
-    # Exit Button
+    
+    # Close Button
     Button:
         background_normal: ''
         background_down: ''
@@ -432,5 +376,3 @@
             allow_stretch: False
             center_x: self.parent.center_x
             center_y: self.parent.center_y
-    
-    

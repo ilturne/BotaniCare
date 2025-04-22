@@ -2,84 +2,115 @@ from datetime import datetime, timedelta
 from greenhouse_data import GreenhouseData
 
 SUNLIGHT_BRIGHTNESS = {
-    "Full sun": 100,        # percent
-    "part sun": 75,       # percent
-    "Filtered shade": 25,   # percent
-    "part shade": 50,     # percent
+    "Full sun": 100,
+    "part sun": 75,
+    "Filtered shade": 25,
+    "part shade": 50,
 }
 
 class GreenhouseController:
+    """
+    Controls fan, watering, and lighting based on greenhouse data.
+    Throttles checks to conserve power: frequent during day, infrequent at night.
+    """
+    # Daytime window (inclusive start, exclusive end)
+    DAY_START = 6
+    DAY_END = 18
+    # Intervals for checks
+    DAY_CHECK_INTERVAL = timedelta(minutes=2)
+    NIGHT_CHECK_INTERVAL = timedelta(hours=1)
+
     def __init__(self, greenhouse_data: GreenhouseData):
-        self.greenhouse_data = greenhouse_data
-        self.last_watered = {}  # key: plant id, value: datetime
-        self.last_brightness = None  # track the last set LED brightness
+        self.data = greenhouse_data
+        # Track last execution times per check
+        self.last_temp_check = None
+        self.last_watering_check = None
+        self.last_light_check = None
+        # Track last watered times per plant
+        self.last_watered = {}
+        # Track last LED brightness
+        self.last_brightness = None
+
+    def _should_run(self, last_run: datetime) -> bool:
+        """
+        Determine if a check should run based on current time and last_run.
+        """
+        now = datetime.now()
+        # Choose interval
+        if self.DAY_START <= now.hour < self.DAY_END:
+            interval = self.DAY_CHECK_INTERVAL
+        else:
+            interval = self.NIGHT_CHECK_INTERVAL
+        return (last_run is None) or (now - last_run >= interval)
 
     def activate_fan(self):
         print("Fan activated.")
-        # Insert code to control the fan actuator.
-    
+        # TODO: integrate with real fan actuator
+
     def deactivate_fan(self):
         print("Fan deactivated.")
-        # Insert code to control the fan actuator.
-    
+        # TODO: integrate with real fan actuator
+
     def activate_water_pump(self, duration_seconds: int):
-        print(f"Water pump activated for {duration_seconds} seconds.")
-        # Insert code to control the water pump.
-    
-    def set_led_brightness(self, brightness_percent: int):
-        # Only update if the brightness has changed
-        if self.last_brightness != brightness_percent:
-            print(f"Setting LED brightness to {brightness_percent}%.")
-            # Insert code to control LED lights.
-            self.last_brightness = brightness_percent
-        else:
-            print("LED brightness remains unchanged.")
-    
+        print(f"Water pump activated for {duration_seconds}s.")
+        # TODO: integrate with real pump actuator
+
+    def set_led_brightness(self, brightness: int):
+        if self.last_brightness != brightness:
+            print(f"LED brightness set to {brightness}%.")
+            self.last_brightness = brightness
+            # TODO: integrate with real LED driver
+
     def check_temperature(self):
-        current_temp = self.greenhouse_data.current_temperature
-        target_max = self.greenhouse_data.get_global_temperature_max()  # Example function
-        if current_temp > target_max:
+        if not self._should_run(self.last_temp_check):
+            return
+        now = datetime.now()
+        temp = self.data.current_temperature
+        # Use lowest max tolerance across plants
+        max_allowed = self.data.get_global_temperature_max()
+        if temp > max_allowed:
             self.activate_fan()
         else:
             self.deactivate_fan()
-    
+        self.last_temp_check = now
+
     def check_watering(self):
-        # Loop over each plant to determine if watering is due.
-        for plant in self.greenhouse_data.user_added_plants:
-            benchmark = plant.get('watering_general_benchmark', "{}")
+        if not self._should_run(self.last_watering_check):
+            return
+        now = datetime.now()
+        for plant in self.data.user_added_plants:
+            plant_id = plant.get('id')
+            # Determine watering frequency (days)
             try:
                 import ast
-                benchmark_dict = ast.literal_eval(benchmark)
-                freq_range = benchmark_dict.get('value', '0-0')
-                lower_bound = int(freq_range.split('-')[0])
-            except Exception as e:
-                lower_bound = 7  # Default to 7 days if error
-            
-            plant_id = plant.get('id')
-            last_watered = self.last_watered.get(plant_id, None)
-            now = datetime.now()
-            if last_watered is None or now - last_watered > timedelta(days=lower_bound):
-                depth_req_str = plant.get('depth_water_requirement', "{}")
+                b = ast.literal_eval(plant.get('watering_general_benchmark', '{}'))
+                days = int(b.get('value', '7').split('-')[0])
+            except Exception:
+                days = 7
+            last = self.last_watered.get(plant_id)
+            if (last is None) or (now - last > timedelta(days=days)):
+                # Determine depth (default seconds)
                 try:
-                    depth_dict = ast.literal_eval(depth_req_str)
-                    required_depth = int(depth_dict.get('value', 2))
-                except Exception as e:
-                    required_depth = 2  # default if not provided
-                self.activate_water_pump(duration_seconds=5)
+                    d = ast.literal_eval(plant.get('depth_water_requirement', '{}'))
+                    sec = int(d.get('value', 5))
+                except Exception:
+                    sec = 5
+                self.activate_water_pump(duration_seconds=sec)
                 self.last_watered[plant_id] = now
-    
+        self.last_watering_check = now
+
     def check_light(self):
-        # Get the current hour (24-hour format)
-        current_hour = datetime.now().hour
-        # Define daytime as 6 AM (06:00) to 6 PM (18:00)
-        if 6 <= current_hour < 18:
-            # Daytime: set brightness based on plant's sunlight preference
-            if self.greenhouse_data.user_added_plants:
-                sunlight_str = self.greenhouse_data.user_added_plants[0].get('sunlight', 'Full sun')
-                brightness = SUNLIGHT_BRIGHTNESS.get(sunlight_str, 100)
+        if not self._should_run(self.last_light_check):
+            return
+        now = datetime.now()
+        # Daytime brightness
+        if self.DAY_START <= now.hour < self.DAY_END:
+            if self.data.user_added_plants:
+                pref = self.data.user_added_plants[0].get('sunlight', 'Full sun')
+                brightness = SUNLIGHT_BRIGHTNESS.get(pref, 100)
             else:
-                brightness = 75  # Default if no plant data
+                brightness = 75
         else:
-            # Nighttime: set LED brightness to 0 (or a low value if you prefer dim light)
             brightness = 0
         self.set_led_brightness(brightness)
+        self.last_light_check = now
