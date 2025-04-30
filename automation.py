@@ -1,5 +1,8 @@
 from datetime import datetime, timedelta
 from greenhouse_data import GreenhouseData
+import ActuatorTesting.Fan, ActuatorTesting.Pump, ActuatorTesting.Light
+import lgpio
+import time
 
 SUNLIGHT_BRIGHTNESS = {
     "Full sun": 100,
@@ -45,21 +48,39 @@ class GreenhouseController:
 
     def activate_fan(self):
         print("Fan activated.")
-        # TODO: integrate with real fan actuator
+        FAN_RELAY_PIN = 27
+        h = lgpio.gpiochip_open(0)
+        lgpio.gpio_claim_output(h, FAN_RELAY_PIN)
+        ActuatorTesting.Fan.toggle_fan(h, FAN_RELAY_PIN, True)
+        time.sleep(15)
+        ActuatorTesting.Fan.toggle_fan(h, FAN_RELAY_PIN, False)
+        lgpio.gpiochip_close(h)
 
     def deactivate_fan(self):
         print("Fan deactivated.")
-        # TODO: integrate with real fan actuator
+        
 
     def activate_water_pump(self, duration_seconds: int):
         print(f"Water pump activated for {duration_seconds}s.")
-        # TODO: integrate with real pump actuator
+        PUMP_CTRL_PIN = 22
+        h = lgpio.gpiochip_open(0)
+        lgpio.gpio_claim_output(h, PUMP_CTRL_PIN)
+        ActuatorTesting.Pump.toggle_pump(h, PUMP_CTRL_PIN, True)
+        time.sleep(1)
+        ActuatorTesting.Pump.toggle_pump(h, PUMP_CTRL_PIN, False)
+        lgpio.gpiochip_close(h)
 
     def set_led_brightness(self, brightness: int):
-        if self.last_brightness != brightness:
-            print(f"LED brightness set to {brightness}%.")
-            self.last_brightness = brightness
-            # TODO: integrate with real LED driver
+        # if self.last_brightness != brightness:
+        #     print(f"LED brightness set to {brightness}%.")
+        #     self.last_brightness = brightness
+        LIGHT_RELAY_PIN = 17
+        h = lgpio.gpiochip_open(0)
+        lgpio.gpio_claim_output(h, LIGHT_RELAY_PIN)
+        ActuatorTesting.Light.toggle_light(h, LIGHT_RELAY_PIN, True)
+        time.sleep(4)
+        ActuatorTesting.Light.toggle_light(h, LIGHT_RELAY_PIN, False)
+        lgpio.gpiochip_close(h)
 
     def check_temperature(self):
         if not self._should_run(self.last_temp_check):
@@ -69,7 +90,8 @@ class GreenhouseController:
         # Use lowest max tolerance across plants
         max_allowed = self.data.get_global_temperature_max()
         if temp > max_allowed:
-            self.activate_fan()
+            #self.activate_fan()
+            self.deactivate_fan()
         else:
             self.deactivate_fan()
         self.last_temp_check = now
@@ -95,7 +117,7 @@ class GreenhouseController:
                     sec = int(d.get('value', 5))
                 except Exception:
                     sec = 5
-                self.activate_water_pump(duration_seconds=sec)
+                #self.activate_water_pump(duration_seconds=sec)
                 self.last_watered[plant_id] = now
         self.last_watering_check = now
 
@@ -112,5 +134,5 @@ class GreenhouseController:
                 brightness = 75
         else:
             brightness = 0
-        self.set_led_brightness(brightness)
+        #self.set_led_brightness(brightness)
         self.last_light_check = now

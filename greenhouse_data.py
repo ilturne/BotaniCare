@@ -4,16 +4,19 @@ import random
 import os
 import csv
 import pandas as pd
+import lgpio
+import time
+import ActuatorTesting.Fan
 from kivy.event import EventDispatcher
 from kivy.properties import (
     BooleanProperty, ListProperty, NumericProperty, StringProperty
 )
 
 #Sensor Files Linux Only!
-#import SensorTesting.DHT20, SensorTesting.Grove, SensorTesting.SFH213FA
+import SensorTesting.DHT20, SensorTesting.Grove, SensorTesting.SFH213FA
 
 #temperature sensor data
-#from w1thermsensor import W1ThermSensor
+from w1thermsensor import W1ThermSensor
 
 HARDINESS_TEMPERATURE_TABLE = {
     1:  (-60, -50),
@@ -30,6 +33,10 @@ HARDINESS_TEMPERATURE_TABLE = {
     12: ( 50,  60),
     13: ( 60,  70),
 }
+
+FAN = 0
+PUMP = 0
+LIGHT = 0
 
 class GreenhouseData(EventDispatcher):
     # File where the state is saved
@@ -71,7 +78,7 @@ class GreenhouseData(EventDispatcher):
     soil_moisture_increasing = True
 
     #sensor variables
-    #temperatureSensor = W1ThermSensor()
+    temperatureSensor = W1ThermSensor()
 
     # Thresholds for evaluating ring colors (for UI feedback)
     TEMPERATURE_THRESHOLDS = {"good": (64, 75), "warning": (50, 85)}
@@ -179,51 +186,96 @@ class GreenhouseData(EventDispatcher):
     
     # Toggle methods for hardware simulation
     def toggle_fan_status(self):
-        self.fan_status = not self.fan_status
-        self.fan_status_color = self.DEFAULT_ON_COLOR if self.fan_status else self.DEFAULT_OFF_COLOR
+        global FAN
+        FAN_RELAY_PIN = 27
+        h = lgpio.gpiochip_open(0)
+        lgpio.gpio_claim_output(h, FAN_RELAY_PIN)
+        if (FAN == 0):
+            ActuatorTesting.Fan.toggle_fan(h, FAN_RELAY_PIN, True)
+            FAN = 1
+            lgpio.gpiochip_close(h)
+            self.fan_status = not self.fan_status
+            self.fan_status_color = self.DEFAULT_ON_COLOR
+        elif (FAN == 1):
+            ActuatorTesting.Fan.toggle_fan(h, FAN_RELAY_PIN, False)
+            FAN = 0
+            lgpio.gpiochip_close(h)
+            self.fan_status = not self.fan_status
+            self.fan_status_color = self.DEFAULT_OFF_COLOR
+        
     
     def toggle_lighting_status(self):
-        self.lighting_status = not self.lighting_status
-        self.lighting_status_color = self.DEFAULT_ON_COLOR if self.lighting_status else self.DEFAULT_OFF_COLOR
+        global LIGHT
+        LIGHT_RELAY_PIN = 17
+        h = lgpio.gpiochip_open(0)
+        lgpio.gpio_claim_output(h, LIGHT_RELAY_PIN)
+        if (LIGHT == 0):
+            ActuatorTesting.Light.toggle_light(h, LIGHT_RELAY_PIN, True)
+            LIGHT = 1
+            lgpio.gpiochip_close(h)
+            self.lighting_status = not self.lighting_status
+            self.lighting_status_color = self.DEFAULT_ON_COLOR
+        elif (LIGHT == 1):
+            ActuatorTesting.Light.toggle_light(h, LIGHT_RELAY_PIN, False)
+            LIGHT = 0
+            lgpio.gpiochip_close(h)
+            self.lighting_status = not self.lighting_status
+            self.lighting_status_color = self.DEFAULT_OFF_COLOR
+        # self.lighting_status = not self.lighting_status
+        # self.lighting_status_color = self.DEFAULT_ON_COLOR if self.lighting_status else self.DEFAULT_OFF_COLOR
     
     def toggle_water_pump_status(self):
-        self.water_pump_status = not self.water_pump_status
-        self.water_pump_status_color = self.DEFAULT_ON_COLOR if self.water_pump_status else self.DEFAULT_OFF_COLOR
+        global PUMP
+        PUMP_RELAY_PIN = 22
+        h = lgpio.gpiochip_open(0)
+        lgpio.gpio_claim_output(h, PUMP_RELAY_PIN)
+        if (PUMP == 0):
+            ActuatorTesting.Pump.toggle_pump(h, PUMP_RELAY_PIN, True)
+            PUMP = 1
+            lgpio.gpiochip_close(h)
+            self.water_pump_status = not self.water_pump_status
+            self.water_pump_status_color = self.DEFAULT_ON_COLOR
+        elif (PUMP == 1):
+            ActuatorTesting.Pump.toggle_pump(h, PUMP_RELAY_PIN, False)
+            PUMP = 0
+            lgpio.gpiochip_close(h)
+            self.water_pump_status = not self.water_pump_status
+            self.water_pump_status_color = self.DEFAULT_OFF_COLOR
 
-    def simulate_sensors(self):
-        #Temperature Sensor
-        step = 0.1
-        if self.temperature_increasing:
-            self.current_temperature += step
-            if self.current_temperature >= 80.0:
-                self.temperature_increasing = False
-        else:
-            self.current_temperature -= step
-            if self.current_temperature <= 75.0:
-                self.temperature_increasing = True
+    # def simulate_sensors(self):
+    #     #Temperature Sensor
+    #     step = 0.1
+    #     if self.temperature_increasing:
+    #         self.current_temperature += step
+    #         if self.current_temperature >= 80.0:
+    #             self.temperature_increasing = False
+    #     else:
+    #         self.current_temperature -= step
+    #         if self.current_temperature <= 75.0:
+    #             self.temperature_increasing = True
 
-        #Humidity Sensor
-        self.current_humidity = random.uniform(0.40, 0.90)
+    #     #Humidity Sensor
+    #     self.current_humidity = random.uniform(0.40, 0.90)
         
-        #Light Sensor
-        if self.light_level_increasing:
-            self.current_light_level += step
-            if self.current_light_level >= 800:
-                self.light_level_increasing = False
-        else:
-            self.current_light_level -= step
-            if self.current_light_level <= 200:
-                self.light_level_increasing = True
+    #     Light Sensor
+    #     if self.light_level_increasing:
+    #         self.current_light_level += step
+    #         if self.current_light_level >= 800:
+    #             self.light_level_increasing = False
+    #     else:
+    #         self.current_light_level -= step
+    #         if self.current_light_level <= 200:
+    #             self.light_level_increasing = True
         
-        #Soil Moisture Sensor
-        if self.soil_moisture_increasing:
-            self.current_soil_moisture += step
-            if self.current_soil_moisture >= 0.60:
-                self.soil_moisture_increasing = False
-        else:
-            self.current_soil_moisture -= step
-            if self.current_soil_moisture <= 0.20:
-                self.soil_moisture_increasing = True
+    #     Soil Moisture Sensor
+    #     if self.soil_moisture_increasing:
+    #         self.current_soil_moisture += step
+    #         if self.current_soil_moisture >= 0.60:
+    #             self.soil_moisture_increasing = False
+    #     else:
+    #         self.current_soil_moisture -= step
+    #         if self.current_soil_moisture <= 0.20:
+    #             self.soil_moisture_increasing = True
     
     def evaluate_ring_color(self, value, thresholds):
         good_min, good_max = thresholds["good"]
@@ -236,52 +288,52 @@ class GreenhouseData(EventDispatcher):
             return [0.812, 0.008, 0.008, 0.8]
     
     # Uncomment when usign the Pi
-    # def get_temperature(self):
-    #     if self.greenhouse_units == "Imperial":
-    #         try:
-    #             self.current_temperature = (((self.temperatureSensor.get_temperature()) * 1.8) + 32)
-    #         except Exception as e:
-    #             print("Temperature sensor error:", e)
-    #             self.current_temperature = 0
-    #     else: 
-    #         try:
-    #             self.current_temperature = self.temperatureSensor.get_temperature()
-    #         except Exception as e:
-    #             print("Temperature sensor error:", e)
-    #             self.current_temperature = 0
+    def get_temperature(self):
+        if self.greenhouse_units == "Imperial":
+            try:
+                self.current_temperature = (((self.temperatureSensor.get_temperature()) * 1.8) + 32)
+            except Exception as e:
+                print("Temperature sensor error:", e)
+                self.current_temperature = 0
+        else: 
+            try:
+                self.current_temperature = self.temperatureSensor.get_temperature()
+            except Exception as e:
+                print("Temperature sensor error:", e)
+                self.current_temperature = 0
 
     # #This is Linux only so when on the Pi uncomment this
-    # def get_light_level(self):
-    #     try:
-    #         adc_value = SensorTesting.SFH213FA.read_adc(0)
-    #         voltage = SensorTesting.SFH213FA.adc_to_voltage(adc_value)
-    #         light_intensity = SensorTesting.SFH213FA.voltage_to_light_intensity(voltage)
-    #         self.current_light_level = light_intensity
-    #     except Exception as e:
-    #         print("Light sensor error:", e)
-    #         self.current_light_level = 0
+    def get_light_level(self):
+        try:
+            adc_value = SensorTesting.SFH213FA.read_adc(0)
+            voltage = SensorTesting.SFH213FA.adc_to_voltage(adc_value)
+            light_intensity = SensorTesting.SFH213FA.voltage_to_light_intensity(voltage)
+            self.current_light_level = light_intensity
+        except Exception as e:
+            print("Light sensor error:", e)
+            self.current_light_level = 0
 
-    # def get_humidity(self):
-    #     try:
-    #         DHT20_I2C_BUS = 1
-    #         DHT20_I2C_ADDR = 0x38
-    #         dht20 = SensorTesting.DHT20.DFRobot_DHT20(DHT20_I2C_BUS, DHT20_I2C_ADDR)
-    #         temp, hum = dht20.get_temperature_and_humidity()
-    #         self.current_humidity = hum * .01
-    #     except Exception as e:
-    #         print("Humidity sensor error:", e)
-    #         self.current_humidity = 0
+    def get_humidity(self):
+        try:
+            DHT20_I2C_BUS = 1
+            DHT20_I2C_ADDR = 0x38
+            dht20 = SensorTesting.DHT20.DFRobot_DHT20(DHT20_I2C_BUS, DHT20_I2C_ADDR)
+            temp, hum = dht20.get_temperature_and_humidity()
+            self.current_humidity = hum * .01
+        except Exception as e:
+            print("Humidity sensor error:", e)
+            self.current_humidity = 0
 
     # #This is Linux only so when on the Pi uncomment this
-    # def get_soil_moisture(self):
-    #     try:
-    #         adc_value = SensorTesting.Grove.read_adc(0)
-    #         voltage = SensorTesting.Grove.adc_to_voltage(adc_value)
-    #         moisture_percentage = SensorTesting.Grove.voltage_to_moisture(voltage)
-    #         self.current_soil_moisture = moisture_percentage * .01
-    #     except Exception as e:
-    #         print("Soil moisture sensor error:", e)
-    #         self.current_soil_moisture = 0
+    def get_soil_moisture(self):
+        try:
+            adc_value = SensorTesting.Grove.read_adc(1)
+            voltage = SensorTesting.Grove.adc_to_voltage(adc_value)
+            moisture_percentage = SensorTesting.Grove.voltage_to_moisture(voltage)
+            self.current_soil_moisture = moisture_percentage * .01
+        except Exception as e:
+            print("Soil moisture sensor error:", e)
+            self.current_soil_moisture = 0
 
     # Save and load state methods
     def save_state(self, state_file: str = None):

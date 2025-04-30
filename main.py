@@ -45,7 +45,6 @@ class MyApp(App):
         self.sm.add_widget(self.plant_home_screen)
 
         # Create & add settings screen
-        # Create & add settings screen
         self.settings_screen = SettingsScreen(greenhouse_data=self.greenhouse_data, name='settings')
         self.sm.add_widget(self.settings_screen)
         # Schedule simulation updates
@@ -56,16 +55,16 @@ class MyApp(App):
         return self.sm
 
     def update_environment(self, dt):
-        self.greenhouse_data.simulate_sensors()
+        # self.greenhouse_data.simulate_sensors()
 
         self.greenhouse_controller.check_temperature()
         self.greenhouse_controller.check_watering()
         self.greenhouse_controller.check_light()
 
-        # self.greenhouse_data.get_humidity()
-        # self.greenhouse_data.get_light_level()
-        # self.greenhouse_data.get_temperature()
-        # self.greenhouse_data.get_soil_moisture()
+        self.greenhouse_data.get_humidity()
+        self.greenhouse_data.get_light_level()
+        self.greenhouse_data.get_temperature()
+        self.greenhouse_data.get_soil_moisture()
         
         self.home_screen.update_cards()
     

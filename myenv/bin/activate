@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/home/BotaniCare/Projects/BotaniCare/myenv"
+VIRTUAL_ENV="/home/botanicare/BotaniCare/myenv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

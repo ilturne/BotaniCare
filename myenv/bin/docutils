@@ -1,4 +1,4 @@
-#!/home/BotaniCare/Projects/BotaniCare/myenv/bin/python3
+#!/home/botanicare/BotaniCare/myenv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys

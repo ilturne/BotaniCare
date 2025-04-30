@@ -20,7 +20,7 @@ def adc_to_voltage(adc_value):
 	return (adc_value / ADC_MAX) * V_REF
 
 def voltage_to_light_intensity(voltage):
-	Dark_Voltage = 0.3
-	Bright_Voltage = 2.0
+	Dark_Voltage = 1.0
+	Bright_Voltage = 3.3
 	light_percentage = ((voltage - Dark_Voltage) / (Bright_Voltage - Dark_Voltage)) * 100
 	return max(0, min(light_percentage, 100))
